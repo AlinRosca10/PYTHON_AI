@@ -1,0 +1,242 @@
+---
+description: "Policy as Code - Define and enforce policies using code (OPA, Terraform policies, Kubernetes policies)"
+globs:
+  - "**/*.rego"
+  - "**/policies/**/*"
+  - "**/*.tf"
+  - "**/*.tfvars"
+  - "**/kubernetes/**/*.yaml"
+  - "**/k8s/**/*.yaml"
+alwaysApply: false
+---
+
+# Policy as Code
+
+## Core Principle
+
+Define policies as code to ensure consistent enforcement across infrastructure, applications, and deployments. Policies should be version-controlled, testable, and auditable.
+
+---
+
+## 1. Open Policy Agent (OPA) / Rego
+
+### Principle
+
+Use OPA and Rego language to define policies for authorization, admission control, and data validation.
+
+### Use Cases
+
+- **Kubernetes Admission Control**: Validate/deny pod deployments
+- **API Authorization**: Enforce access control policies
+- **Terraform Validation**: Validate infrastructure before deployment
+- **Data Filtering**: Filter sensitive data from responses
+
+### Example Rego Policy
+
+```rego
+package kubernetes.admission
+
+deny[msg] {
+    input.request.kind.kind == "Pod"
+    image := input.request.object.spec.containers[_].image
+    not startswith(image, "myregistry.io/")
+    msg := "Image must come from approved registry"
+}
+
+deny[msg] {
+    input.request.kind.kind == "Pod"
+    input.request.object.spec.containers[_].resources.limits.cpu == null
+    msg := "CPU limits are required"
+}
+```
+
+### Rules
+
+- ✅ **DO**: Write policies in Rego for OPA
+- ✅ **DO**: Test policies with unit tests
+- ✅ **DO**: Version control policy files
+- ✅ **DO**: Use policy bundles for distribution
+- ✅ **DO**: Document policy rationale
+- ❌ **DON'T**: Hardcode policy logic in application code
+- ❌ **DON'T**: Deploy untested policies
+
+---
+
+## 2. Terraform Policies
+
+### Principle
+
+Enforce infrastructure policies using tools like OPA, Sentinel, or Checkov to validate Terraform configurations.
+
+### Common Policies
+
+- **Encryption Requirements**: All S3 buckets must have encryption enabled
+- **Resource Tagging**: All resources must have required tags
+- **IAM Least Privilege**: IAM policies must follow least privilege
+- **Network Security**: Security groups must not allow 0.0.0.0/0
+- **Cost Controls**: Instance types must not exceed cost thresholds
+
+### Tools
+
+- **OPA Terraform Provider**: Use OPA to validate Terraform
+- **Checkov**: Static analysis for Terraform
+- **Sentinel**: HashiCorp's policy framework
+- **Terrascan**: Security scanning for Terraform
+
+### Example Checkov Policy
+
+```yaml
+# .checkov.yaml
+checks:
+  - id: CKV_AWS_19
+    name: Ensure S3 bucket has encryption enabled
+    severity: HIGH
+```
+
+### Rules
+
+- ✅ **DO**: Validate Terraform before applying
+- ✅ **DO**: Enforce encryption requirements
+- ✅ **DO**: Require resource tagging
+- ✅ **DO**: Enforce IAM least privilege
+- ✅ **DO**: Block insecure configurations
+- ❌ **DON'T**: Allow insecure configurations
+- ❌ **DON'T**: Skip policy validation in CI/CD
+
+---
+
+## 3. Kubernetes Policies
+
+### Principle
+
+Use admission controllers and policies to enforce security and best practices in Kubernetes clusters.
+
+### Policy Categories
+
+- **Image Registry**: Only allow images from approved registries
+- **Resource Limits**: Require CPU/memory limits
+- **Security Context**: Enforce security contexts (runAsNonRoot, readOnlyRootFilesystem)
+- **Network Policies**: Define network isolation
+- **Pod Security Standards**: Enforce pod security standards (restricted, baseline, privileged)
+
+### Tools
+
+- **OPA Gatekeeper**: Kubernetes admission controller for OPA
+- **Kyverno**: Kubernetes native policy engine
+- **Pod Security Standards**: Built-in Kubernetes policies
+
+### Example Kyverno Policy
+
+```yaml
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: require-labels
+spec:
+  validationFailureAction: enforce
+  rules:
+  - name: check-labels
+    match:
+      resources:
+        kinds:
+        - Pod
+    validate:
+      message: "App and version labels are required"
+      pattern:
+        metadata:
+          labels:
+            app: "?*"
+            version: "?*"
+```
+
+### Rules
+
+- ✅ **DO**: Enforce image registry restrictions
+- ✅ **DO**: Require resource limits on all containers
+- ✅ **DO**: Enforce security contexts
+- ✅ **DO**: Use pod security standards
+- ✅ **DO**: Define network policies for isolation
+- ❌ **DON'T**: Allow privileged containers in production
+- ❌ **DON'T**: Skip resource limits
+- ❌ **DON'T**: Allow containers running as root
+
+---
+
+## 4. Policy Enforcement Points
+
+### Where to Enforce
+
+1. **Development**: Pre-commit hooks, IDE plugins
+2. **CI/CD**: Pipeline validation before deployment
+3. **Admission Control**: Kubernetes admission controllers
+4. **Runtime**: Runtime policy enforcement (OPA, service mesh)
+
+### Implementation
+
+- Use pre-commit hooks for Terraform validation
+- Integrate policy checks in CI/CD pipeline
+- Configure admission controllers for Kubernetes
+- Monitor policy violations and alert
+
+### Rules
+
+- ✅ **DO**: Enforce policies at multiple points
+- ✅ **DO**: Block non-compliant changes in CI/CD
+- ✅ **DO**: Use admission controllers for runtime enforcement
+- ✅ **DO**: Monitor and alert on policy violations
+- ❌ **DON'T**: Rely on single enforcement point
+- ❌ **DON'T**: Allow policy bypasses
+
+---
+
+## 5. Policy Testing
+
+### Principle
+
+Test policies like code. Write unit tests, integration tests, and validate policies before deployment.
+
+### Testing Tools
+
+- **OPA Test Framework**: Test Rego policies
+- **Conftest**: Test configuration files with OPA
+- **Policy Unit Tests**: Write tests for policy logic
+
+### Example OPA Test
+
+```rego
+package kubernetes.admission.test
+
+test_deny_unapproved_registry {
+    deny["Image must come from approved registry"] with input as {
+        "request": {
+            "kind": {"kind": "Pod"},
+            "object": {
+                "spec": {
+                    "containers": [{"image": "docker.io/nginx"}]
+                }
+            }
+        }
+    }
+}
+```
+
+### Rules
+
+- ✅ **DO**: Write unit tests for policies
+- ✅ **DO**: Test positive and negative cases
+- ✅ **DO**: Run policy tests in CI/CD
+- ✅ **DO**: Validate policy syntax
+- ❌ **DON'T**: Deploy untested policies
+- ❌ **DON'T**: Skip negative test cases
+
+---
+
+## Summary Checklist
+
+- [ ] Define policies as code (Rego, YAML, etc.)
+- [ ] Enforce Terraform policies before apply
+- [ ] Enforce Kubernetes policies via admission controllers
+- [ ] Test policies with unit tests
+- [ ] Version control all policy files
+- [ ] Monitor policy violations
+- [ ] Document policy rationale

@@ -1,0 +1,132 @@
+---
+description: "Anti-pattern: Non-atomic SELECT + INSERT causing race conditions"
+globs:
+  - "src/db/**/*.ts"
+  - "src/repositories/**/*.ts"
+  - "src/services/**/*.ts"
+alwaysApply: false
+---
+
+# Anti-Pattern: Non-Atomic SELECT + INSERT
+
+## The Problem
+
+Using a non-atomic SELECT + INSERT pattern creates race conditions where concurrent requests can create duplicate records.
+
+## The Anti-Pattern
+
+```typescript
+// ❌ BAD: Race condition!
+async function createUser(email: string) {
+  // Check if exists
+  const existing = await db('users').where('email', email).first();
+  
+  if (existing) {
+    throw new Error('User already exists');
+  }
+  
+  // Create user
+  await db('users').insert({ email });
+}
+```
+
+**Problem**: Two concurrent requests can both pass the SELECT check and both INSERT, creating duplicates.
+
+## Solutions
+
+### Solution 1: Database Constraints + Try-Catch
+
+```typescript
+// ✅ GOOD: Use unique constraint
+async function createUser(email: string) {
+  try {
+    await db('users').insert({ email });
+  } catch (error) {
+    if (error.code === '23505') { // PostgreSQL unique violation
+      throw new Error('User already exists');
+    }
+    throw error;
+  }
+}
+```
+
+### Solution 2: UPSERT Pattern
+
+```typescript
+// ✅ GOOD: Atomic UPSERT
+async function createOrUpdateUser(email: string, data: UserData) {
+  await db('users')
+    .insert({ email, ...data })
+    .onConflict('email')
+    .merge(data); // PostgreSQL
+  
+  // Or for other databases:
+  // INSERT ... ON DUPLICATE KEY UPDATE ...
+}
+```
+
+### Solution 3: Database-Level Unique Constraint
+
+```sql
+-- ✅ GOOD: Enforce at database level
+CREATE TABLE users (
+  id SERIAL PRIMARY KEY,
+  email VARCHAR(255) UNIQUE NOT NULL,
+  ...
+);
+```
+
+## Detection
+
+Look for patterns like:
+
+- `SELECT ... WHERE ...` followed by `INSERT`
+- No unique constraints on business keys
+- Error handling that doesn't check for duplicate key violations
+- Concurrent creation of the same resource
+
+## DO
+
+- ✅ Use database unique constraints
+- ✅ Use UPSERT operations
+- ✅ Handle unique constraint violations gracefully
+- ✅ Use transactions when needed
+- ✅ Test with concurrent requests
+
+## DON'T
+
+- ❌ Check existence then insert (non-atomic)
+- ❌ Rely on application-level checks alone
+- ❌ Ignore unique constraint violations
+- ❌ Create resources without unique constraints
+
+## Testing
+
+Test with concurrent requests:
+
+```typescript
+test('prevents duplicate creation', async () => {
+  const email = 'test@example.com';
+  
+  // Fire 10 concurrent requests
+  const promises = Array(10).fill(null).map(() => 
+    createUser(email)
+  );
+  
+  const results = await Promise.allSettled(promises);
+  
+  // Only one should succeed
+  const successes = results.filter(r => r.status === 'fulfilled');
+  expect(successes).toHaveLength(1);
+  
+  // Verify only one record exists
+  const users = await db('users').where('email', email);
+  expect(users).toHaveLength(1);
+});
+```
+
+## Related Patterns
+
+- **Idempotency**: Use idempotency keys for external-facing APIs
+- **Optimistic Locking**: Use version fields for concurrent updates
+- **Pessimistic Locking**: Lock rows during critical sections (use sparingly)

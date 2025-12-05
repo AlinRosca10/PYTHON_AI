@@ -1,0 +1,89 @@
+---
+description: "React and Next.js best practices and conventions"
+globs:
+  - "**/*.tsx"
+  - "**/*.jsx"
+  - "app/**/*.tsx"
+  - "pages/**/*.tsx"
+alwaysApply: false
+---
+
+# React & Next.js Rules
+
+## Component Patterns
+
+### Functional Components
+
+- ✅ Use functional components with hooks
+- ❌ Don't use class-based components
+
+### Hooks
+
+- Follow Rules of Hooks
+- Use custom hooks to share logic
+- Keep hooks at the top level of components
+
+### Next.js Patterns
+
+- Use Server Components when possible (Next.js 13+)
+- Use Client Components only when needed (interactivity, browser APIs)
+- Leverage Server Actions for mutations
+
+## State Management
+
+- Use `useState` for local component state
+- Use Context for shared state within component tree
+- Use external state management (Zustand, Redux) for global state
+- Avoid prop drilling - use Context or state management
+
+## Performance
+
+- Use `React.memo` for expensive components
+- Use `useMemo` and `useCallback` appropriately
+- Implement proper loading and error states
+- Use Next.js Image component for optimized images
+
+## DO
+
+- ✅ Use functional components with hooks
+- ✅ Use Server Components in Next.js when possible
+- ✅ Implement proper loading and error states
+- ✅ Use proper key props in lists
+- ✅ Memoize expensive computations
+
+## DON'T
+
+- ❌ Use class-based components
+- ❌ Mutate state directly
+- ❌ Forget to add keys in lists
+- ❌ Create components unnecessarily
+- ❌ Use Client Components when Server Components will do
+
+## Examples
+
+### Good: Functional Component
+
+```tsx
+interface ButtonProps {
+  onClick: () => void;
+  children: React.ReactNode;
+}
+
+export function Button({ onClick, children }: ButtonProps) {
+  return (
+    <button onClick={onClick}>
+      {children}
+    </button>
+  );
+}
+```
+
+### Bad: Class Component
+
+```tsx
+class Button extends React.Component {
+  render() {
+    return <button onClick={this.props.onClick}>{this.props.children}</button>;
+  }
+}
+```

@@ -1,0 +1,81 @@
+---
+description: "Rules for graceful error handling"
+globs:
+  - "**/*.ts"
+  - "**/*.js"
+alwaysApply: false
+---
+
+# Error Handling Rules
+
+## Core Principle
+
+Catch errors gracefully. Log the technical error internally, but return a generic, safe error message to the user.
+
+## Error Handling Patterns
+
+### Try-Catch Blocks
+
+- Always handle errors appropriately
+- Don't swallow errors silently
+- Log errors with full context for debugging
+- Return user-friendly error messages
+
+### Error Types
+
+- Use typed exceptions/errors
+- Create custom error classes for different error types
+- Distinguish between expected errors and unexpected errors
+
+### Error Responses
+
+- Log technical error details internally
+- Return generic, safe error messages to users
+- Don't expose internal system details
+- Use appropriate HTTP status codes
+
+## DO
+
+- ✅ Catch errors and handle them appropriately
+- ✅ Log full error details with stack traces for debugging
+- ✅ Return user-friendly error messages
+- ✅ Use appropriate error types and status codes
+- ✅ Implement error boundaries (React) or error handlers
+
+## DON'T
+
+- ❌ Swallow errors silently
+- ❌ Expose stack traces or internal errors to users
+- ❌ Log sensitive information (secrets, PII) in error logs
+- ❌ Use generic catch-all without proper handling
+
+## Examples
+
+### Good: Proper Error Handling
+
+```typescript
+async function getUser(id: string): Promise<User> {
+  try {
+    const user = await db.users.findById(id);
+    if (!user) {
+      throw new NotFoundError('User not found');
+    }
+    return user;
+  } catch (error) {
+    logger.error('Failed to fetch user', { id, error });
+    if (error instanceof NotFoundError) {
+      throw error;
+    }
+    throw new InternalServerError('Failed to retrieve user');
+  }
+}
+```
+
+### Bad: Exposing Errors
+
+```typescript
+async function getUser(id: string) {
+  const user = await db.users.findById(id); // ❌ No error handling
+  return user; // ❌ May expose database errors to user
+}
+```

@@ -1,0 +1,113 @@
+---
+description: "Avoid premature microservices - recognize the anti-pattern and costs"
+globs:
+  - "**/*.ts"
+  - "**/*.js"
+alwaysApply: false
+---
+
+# Anti-Pattern: Premature Microservices
+
+## The Problem
+
+Prematurely splitting a monolith into microservices introduces overwhelming complexity and ~30% operational overhead without clear benefits.
+
+## Warning Signs
+
+You may be splitting too early if:
+
+- ✅ You haven't identified clear independent scaling needs
+- ✅ Team size is < 10 developers
+- ✅ You're splitting for organizational boundaries (not technical needs)
+- ✅ You don't have a clear domain bounded context
+- ✅ Operational overhead isn't justified by benefits
+- ✅ You're solving team communication issues with architecture
+
+## Cost Calculator
+
+### Operational Overhead (Microservices)
+
+- **Per Service Overhead**: ~2-5 hours/week for deployment, monitoring, debugging
+- **Network Complexity**: Service discovery, load balancing, distributed tracing
+- **Data Consistency**: Eventual consistency challenges, distributed transactions
+- **Testing Complexity**: Integration tests across services, contract testing
+- **Observability**: Additional logging, metrics, tracing per service
+
+### Estimated Costs
+
+For a 5-service microservices architecture vs modular monolith:
+
+- **Monthly Operational Overhead**: ~40-100 hours
+- **Infrastructure Costs**: 2-3x higher
+- **Development Velocity**: 20-40% slower initial development
+- **Debugging Time**: 2-3x longer for distributed issues
+
+## Decision Framework
+
+**Don't extract unless ALL of these are true:**
+
+1. ✅ Independent scaling requirement (different CPU/memory needs)
+2. ✅ Team ownership (dedicated team needs independent deployment)
+3. ✅ Fault isolation (service failure must not impact core app)
+4. ✅ Technology divergence (incompatible stack requirement)
+5. ✅ Clear bounded context (well-defined domain boundary)
+
+## Alternative: Modular Monolith First
+
+Start with a well-structured modular monolith:
+
+- Clear module boundaries
+- Loose coupling between modules
+- Dependency injection
+- Easy to extract later when needed
+
+Benefits:
+- ✅ Faster initial development
+- ✅ Lower operational overhead
+- ✅ Easier debugging
+- ✅ ACID transactions
+- ✅ Simpler testing
+
+## DO
+
+- ✅ Start with modular monolith
+- ✅ Extract only when all 5 criteria are met
+- ✅ Measure actual operational overhead
+- ✅ Consider team size and maturity
+- ✅ Use clear module boundaries for future extraction
+
+## DON'T
+
+- ❌ Split for organizational boundaries alone
+- ❌ Split "just in case"
+- ❌ Ignore operational overhead
+- ❌ Split before identifying clear technical need
+- ❌ Use microservices to solve team communication
+
+## Migration Path
+
+When ready to extract:
+
+1. Ensure module has clear boundaries
+2. Define service contract (API, events)
+3. Extract module to separate service
+4. Update dependencies gradually
+5. Monitor operational overhead
+
+## Example: Cost-Benefit Analysis
+
+**Scenario**: E-commerce platform
+
+**Monolithic Approach**:
+- Development: 2 weeks
+- Operational overhead: 4 hours/month
+- Infrastructure cost: $500/month
+
+**Microservices Approach** (5 services):
+- Development: 3 weeks
+- Operational overhead: 40 hours/month
+- Infrastructure cost: $1,500/month
+
+**Savings with Monolith**: ~$12,000/year + 432 hours/year
+
+**Conclusion**: Use monolith unless clear need for independent scaling or team autonomy.

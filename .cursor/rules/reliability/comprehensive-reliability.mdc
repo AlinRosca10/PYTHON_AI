@@ -1,0 +1,452 @@
+---
+description: "Comprehensive reliability rules covering idempotency, immutability, pure functions, atomic operations, testing, and logging"
+globs:
+  - "src/api/**/*.ts"
+  - "src/services/**/*.ts"
+  - "src/routes/**/*.ts"
+  - "src/db/**/*.ts"
+  - "src/repositories/**/*.ts"
+alwaysApply: false
+---
+
+# Comprehensive Reliability & Code Quality Rules
+
+## Core Principles
+
+Reliability is built on idempotency, immutability, pure functions, atomic operations, comprehensive testing, and structured logging. These principles ensure systems are fault-tolerant, predictable, and maintainable.
+
+---
+
+## 1. Idempotency
+
+### Principle
+
+All data-modifying operations (API endpoints, scripts, background jobs) **must** be idempotent. Retrying a request must not create duplicates or corrupt state.
+
+Mathematically: \(f(f(x)) = f(x)\)
+
+### Implementation Patterns
+
+#### Idempotency-Key Header Pattern (Recommended for POST/PATCH)
+
+```typescript
+// Client generates unique key (UUID)
+const idempotencyKey = crypto.randomUUID();
+
+// Server implementation with Redis
+async function handleIdempotentRequest(
+  idempotencyKey: string,
+  handler: () => Promise<Response>
+): Promise<Response> {
+  // Check cache first
+  const cached = await redis.get(`idempotency:${idempotencyKey}`);
+  if (cached) {
+    return JSON.parse(cached);
+  }
+
+  // Use distributed lock to prevent race conditions
+  const lock = await redis.acquireLock(`lock:${idempotencyKey}`, 5000);
+  try {
+    // Double-check after acquiring lock
+    const cached2 = await redis.get(`idempotency:${idempotencyKey}`);
+    if (cached2) {
+      return JSON.parse(cached2);
+    }
+
+    // Process request
+    const response = await handler();
+
+    // Store response with TTL (24-48 hours)
+    await redis.setex(
+      `idempotency:${idempotencyKey}`,
+      86400 * 2, // 48 hours
+      JSON.stringify(response)
+    );
+
+    return response;
+  } finally {
+    await lock.release();
+  }
+}
+```
+
+#### Database-Level UPSERT
+
+```typescript
+// PostgreSQL example
+async function createOrUpdateUser(userData: UserData) {
+  await db('users')
+    .insert(userData)
+    .onConflict('email')
+    .merge(userData); // Atomic UPSERT
+}
+
+// MySQL example
+async function createOrUpdateUser(userData: UserData) {
+  await db('users')
+    .insert(userData)
+    .onDuplicateKeyUpdate(userData);
+}
+```
+
+### Rules
+
+- ✅ **DO**: Use Idempotency-Key headers for non-idempotent operations
+- ✅ **DO**: Use UPSERT operations at database level
+- ✅ **DO**: Apply unique constraints on business keys (transaction_id, order_id)
+- ✅ **DO**: Use distributed locks for Redis-backed idempotency checks
+- ✅ **DO**: Return the same response for duplicate requests
+- ✅ **DO**: Set appropriate TTL (24-48 hours) for idempotency keys
+- ❌ **DON'T**: Use GET requests for state changes
+- ❌ **DON'T**: Implement with non-atomic SELECT + INSERT (race conditions)
+- ❌ **DON'T**: Ignore idempotency for background jobs and message handlers
+
+---
+
+## 2. Immutability
+
+### Principle
+
+Prefer immutable data structures. Do not mutate global state or function arguments. Return new objects instead.
+
+### Implementation Guidelines
+
+- Use `const` declarations for variables that won't be reassigned
+- Use `readonly` properties in TypeScript classes/interfaces
+- Use `Object.freeze()` for objects that should never be modified
+- Return new objects with updated state instead of mutating existing ones
+
+### Examples
+
+#### Good: Immutable Update
+
+```typescript
+// Return new object with updated properties
+function updateUser(user: User, updates: Partial<User>): User {
+  return { ...user, ...updates };
+}
+
+// Immutable array operations
+const newItems = items.filter(item => item.active);
+const doubled = numbers.map(n => n * 2);
+```
+
+#### Bad: Mutating Update
+
+```typescript
+// Mutates original object
+function updateUser(user: User, updates: Partial<User>): void {
+  Object.assign(user, updates); // ❌ Side effect
+}
+
+// Mutates array
+items.push(newItem); // ❌ Mutates shared array
+items.splice(0, 1); // ❌ Mutates array
+```
+
+### Rules
+
+- ✅ **DO**: Use `const` instead of `let` whenever possible
+- ✅ **DO**: Return new objects with updated properties
+- ✅ **DO**: Use immutable array methods (`map`, `filter`, `reduce`, `concat`)
+- ✅ **DO**: Use spread operator: `{ ...obj, newProp: value }`
+- ✅ **DO**: Use `readonly` modifier in TypeScript
+- ❌ **DON'T**: Mutate function arguments directly
+- ❌ **DON'T**: Use array mutating methods on shared arrays (`push`, `pop`, `splice`)
+- ❌ **DON'T**: Modify global state
+- ❌ **DON'T**: Reassign variables that could be `const`
+
+---
+
+## 3. Pure Functions
+
+### Principle
+
+Prioritize pure functions: deterministic output based solely on input, with no observable side effects.
+
+A pure function:
+- Returns the same output for the same input (deterministic)
+- Has no side effects (doesn't modify external state, doesn't perform I/O)
+- Doesn't depend on or modify global variables
+
+### Benefits
+
+- ✅ Inherently testable
+- ✅ Predictable and easier to reason about
+- ✅ Easy to cache (memoization)
+- ✅ Thread-safe and concurrency-safe
+- ✅ Easier for AI assistants to understand and validate
+
+### Examples
+
+#### Good: Pure Function
+
+```typescript
+// Pure: no side effects, deterministic
+function calculateTotal(items: CartItem[]): number {
+  return items.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+}
+
+// Pure: doesn't modify input
+function formatPrice(price: number, currency: string): string {
+  return new Intl.NumberFormat('en-US', {
+    style: 'currency',
+    currency: currency
+  }).format(price);
+}
+```
+
+#### Bad: Function with Side Effects
+
+```typescript
+// ❌ Impure: has side effects
+function calculateTotal(items: CartItem[]): number {
+  console.log('Calculating total...'); // Side effect: I/O
+  total = items.reduce(...); // Side effect: modifies global variable
+  return total;
+}
+
+// ❌ Impure: depends on external state
+function getCurrentPrice(): number {
+  return currentMarketPrice; // Depends on global state
+}
+```
+
+### Rules
+
+- ✅ **DO**: Write pure functions for business logic
+- ✅ **DO**: Separate pure logic from I/O operations
+- ✅ **DO**: Use pure functions as building blocks for complex operations
+- ✅ **DO**: Test pure functions with simple input/output pairs
+- ❌ **DON'T**: Mix I/O operations with pure business logic
+- ❌ **DON'T**: Access global state in functions
+- ❌ **DON'T**: Perform side effects (logging, database writes) in pure functions
+- ❌ **DON'T**: Depend on external mutable state
+
+---
+
+## 4. Atomic Operations
+
+### Principle
+
+Database writes must be transactional. Use "All or Nothing" logic to prevent partial state updates.
+
+### Implementation Patterns
+
+#### Single Database Transactions
+
+```typescript
+// ✅ GOOD: Atomic transaction
+async function transferFunds(from: string, to: string, amount: number) {
+  await db.transaction(async (trx) => {
+    await trx('accounts').where('id', from).decrement('balance', amount);
+    await trx('accounts').where('id', to).increment('balance', amount);
+    await trx('transactions').insert({ from, to, amount, timestamp: new Date() });
+    // All or nothing - if any fails, all roll back
+  });
+}
+```
+
+#### Distributed Systems Decision Matrix
+
+| Scenario | Recommended Pattern | Tooling |
+|----------|-------------------|---------|
+| **Single Service, Single Database** | **ACID Transactions** | Standard DB transactions (BEGIN, COMMIT, ROLLBACK) |
+| **Multiple Services, High Consistency** | **Orchestration (Temporal)** | Central orchestrator manages workflow, handles retries/compensation |
+| **Multiple Services, Loosely Coupled** | **Choreography (Saga Pattern)** | Services communicate via events, compensating transactions on failure |
+
+### Rules
+
+- ✅ **DO**: Wrap multi-step database operations in transactions
+- ✅ **DO**: Use database transactions for operations that must be atomic
+- ✅ **DO**: Implement proper error handling with rollback
+- ✅ **DO**: Test transaction rollback scenarios
+- ✅ **DO**: Prefer ACID transactions within modular monolith
+- ❌ **DON'T**: Perform multiple database writes without a transaction when they must succeed together
+- ❌ **DON'T**: Leave database in inconsistent state if one operation fails
+- ❌ **DON'T**: Mix transactional and non-transactional operations in the same business logic
+
+---
+
+## 5. Statelessness
+
+### Principle
+
+Design components to be stateless, relying on external state management to avoid side effects and make scaling easier.
+
+### Implementation
+
+- Store state in external systems (database, cache, session store)
+- Pass all required data as function parameters
+- Avoid global variables and mutable module state
+- Use dependency injection for external dependencies
+
+### Rules
+
+- ✅ **DO**: Keep functions stateless
+- ✅ **DO**: Store state externally (DB, cache, session)
+- ✅ **DO**: Pass required data as parameters
+- ❌ **DON'T**: Use global variables
+- ❌ **DON'T**: Store mutable state in module scope
+
+---
+
+## 6. Design for Failures
+
+### Principle
+
+Assume that network failures, crashes, and other issues are inevitable. Design your system to be fault-tolerant and resilient.
+
+### Patterns
+
+- Implement retries with exponential backoff
+- Use circuit breakers for external dependencies
+- Design graceful degradation paths
+- Implement health checks and monitoring
+- Use timeouts for all external calls
+
+### Rules
+
+- ✅ **DO**: Assume failures will happen
+- ✅ **DO**: Implement retry logic with backoff
+- ✅ **DO**: Set timeouts for all external calls
+- ✅ **DO**: Implement circuit breakers
+- ✅ **DO**: Design fallback mechanisms
+- ❌ **DON'T**: Ignore failure scenarios
+- ❌ **DON'T**: Retry indefinitely
+- ❌ **DON'T**: Wait forever for responses
+
+---
+
+## 7. Infrastructure as Code (IaC)
+
+### Principle
+
+Use IaC to automate and manage your infrastructure, allowing you to build, change, and version your infrastructure in a reliable and repeatable way.
+
+### Tools
+
+- Terraform
+- CloudFormation
+- Pulumi
+- Ansible
+
+### Rules
+
+- ✅ **DO**: Define infrastructure in code
+- ✅ **DO**: Version control infrastructure definitions
+- ✅ **DO**: Use idempotent infrastructure operations
+- ✅ **DO**: Test infrastructure changes in staging
+- ❌ **DON'T**: Make manual infrastructure changes
+- ❌ **DON'T**: Store infrastructure state in git (use remote state)
+
+---
+
+## 8. Testing
+
+### Principle
+
+Thoroughly test your code, especially edge cases and failure scenarios, to ensure idempotency and other reliability goals are met.
+
+### Test Pyramid
+
+- **Unit Tests** (70%): Test individual functions in isolation
+- **Integration Tests** (20%): Test component interactions
+- **E2E Tests** (10%): Test complete user flows
+
+### Testing Requirements
+
+- Test idempotency with concurrent requests
+- Test transaction rollback scenarios
+- Test error handling and edge cases
+- Test retry logic and circuit breakers
+- Achieve good coverage on critical paths
+
+### Rules
+
+- ✅ **DO**: Write tests for critical business logic
+- ✅ **DO**: Test edge cases and error scenarios
+- ✅ **DO**: Test idempotency with concurrent requests
+- ✅ **DO**: Test transaction rollback scenarios
+- ✅ **DO**: Keep tests simple and maintainable
+- ❌ **DON'T**: Skip tests for "simple" code
+- ❌ **DON'T**: Test implementation details
+- ❌ **DON'T**: Write flaky tests
+
+---
+
+## 9. Logging
+
+### Principle
+
+Implement comprehensive logging to track requests, errors, and the results of idempotency checks for debugging and monitoring purposes.
+
+### Structured Logging
+
+```typescript
+interface StructuredLog {
+  timestamp: string;
+  level: 'error' | 'warn' | 'info' | 'debug';
+  message: string;
+  traceId: string;
+  spanId?: string;
+  service: string;
+  correlationId?: string;
+  error?: {
+    name: string;
+    message: string;
+    stack?: string;
+  };
+  [key: string]: any;
+}
+```
+
+### Rules
+
+- ✅ **DO**: Use structured logging (JSON format)
+- ✅ **DO**: Include trace IDs and correlation IDs
+- ✅ **DO**: Log idempotency key usage
+- ✅ **DO**: Log transaction outcomes
+- ✅ **DO**: Never log secrets or PII
+- ❌ **DON'T**: Use unstructured string concatenation
+- ❌ **DON'T**: Log sensitive information
+- ❌ **DON'T**: Log at wrong levels (debug in production)
+
+---
+
+## 10. Concurrency Control
+
+### Principle
+
+Use techniques like versioning or optimistic locking to safely handle concurrent updates and prevent race conditions.
+
+### Patterns
+
+- **Optimistic Locking**: Use version fields, check before update
+- **Pessimistic Locking**: Lock rows during critical sections (use sparingly)
+- **Distributed Locks**: Use Redis/Zookeeper for distributed systems
+
+### Rules
+
+- ✅ **DO**: Use versioning for concurrent updates
+- ✅ **DO**: Use distributed locks for critical sections
+- ✅ **DO**: Handle lock timeouts gracefully
+- ❌ **DON'T**: Ignore concurrent update scenarios
+- ❌ **DON'T**: Hold locks for long periods
+
+---
+
+## Summary Checklist
+
+When writing code, ensure:
+
+- [ ] All data-modifying operations are idempotent
+- [ ] Data structures are treated as immutable
+- [ ] Functions are pure when possible
+- [ ] Database operations are atomic
+- [ ] Components are stateless
+- [ ] Failures are expected and handled
+- [ ] Infrastructure is defined as code
+- [ ] Code is thoroughly tested
+- [ ] Logging is comprehensive and structured
+- [ ] Concurrency is properly controlled

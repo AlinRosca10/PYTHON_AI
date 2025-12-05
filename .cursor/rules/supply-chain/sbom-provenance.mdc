@@ -1,0 +1,228 @@
+---
+description: "Software Supply Chain Security - SBOM generation, signed provenance, and dependency scanning"
+globs:
+  - "package.json"
+  - "package-lock.json"
+  - "yarn.lock"
+  - "pnpm-lock.yaml"
+  - "requirements.txt"
+  - "Pipfile"
+  - ".github/workflows/**/*.yml"
+alwaysApply: false
+---
+
+# Software Supply Chain Security
+
+## Core Principle
+
+Secure the software supply chain by generating SBOMs, signing build provenance, and scanning dependencies for vulnerabilities. This prevents supply chain attacks and ensures traceability.
+
+---
+
+## 1. SBOM Generation
+
+### Principle
+
+Generate Software Bill of Materials (SBOM) for all dependencies. SBOMs provide transparency into what software is being used and where it comes from.
+
+### SBOM Formats
+
+- **CycloneDX**: JSON/XML format, widely adopted
+- **SPDX**: Linux Foundation standard
+- **Syft**: Generates SBOMs from container images
+
+### Tools
+
+- **Syft**: Fast, comprehensive SBOM generation
+- **cyclonedx-cli**: Generate CycloneDX SBOMs
+- **spdx-tools**: Generate SPDX format SBOMs
+
+### Implementation
+
+```bash
+# Generate SBOM with Syft
+syft packages dir:. -o cyclonedx-json -o sbom.json
+
+# Generate for container images
+syft packages docker:myimage:latest -o cyclonedx-json -o sbom.json
+```
+
+### Rules
+
+- ✅ **DO**: Generate SBOMs for all releases
+- ✅ **DO**: Store SBOMs alongside artifacts
+- ✅ **DO**: Include SBOMs in release artifacts
+- ✅ **DO**: Use standardized formats (CycloneDX, SPDX)
+- ✅ **DO**: Automate SBOM generation in CI/CD
+- ❌ **DON'T**: Skip SBOM generation
+- ❌ **DON'T**: Generate SBOMs manually (automate it)
+
+---
+
+## 2. Signed Provenance
+
+### Principle
+
+Sign build attestations (provenance) cryptographically to provide tamper-proof evidence of how artifacts were built. This aligns with SLSA Level 2+ requirements.
+
+### Provenance Contents
+
+- Source repository and commit hash
+- Build timestamp and builder ID
+- Build command and environment
+- Dependencies and inputs
+- Artifact hashes
+
+### Tools
+
+- **Sigstore/Cosign**: Sign and verify artifacts
+- **Tekton Chains**: Kubernetes-native provenance generation
+- **SLSA Provenance Format**: Standard attestation format
+
+### Implementation
+
+```bash
+# Sign artifact with Cosign
+cosign sign --key cosign.key myartifact.tar.gz
+
+# Generate and sign provenance
+cosign attest --predicate provenance.json --key cosign.key myartifact.tar.gz
+```
+
+### Rules
+
+- ✅ **DO**: Sign all build artifacts
+- ✅ **DO**: Include provenance in attestations
+- ✅ **DO**: Verify signatures before deployment
+- ✅ **DO**: Store attestations in tamper-proof systems
+- ✅ **DO**: Use keyless signing (Sigstore) when possible
+- ❌ **DON'T**: Deploy unsigned artifacts
+- ❌ **DON'T**: Skip provenance generation
+- ❌ **DON'T**: Store signing keys in code
+
+---
+
+## 3. Dependency Scanning
+
+### Principle
+
+Scan all dependencies for known vulnerabilities before deployment. This prevents vulnerable components from reaching production.
+
+### Tools
+
+- **Grype**: Comprehensive vulnerability scanner
+- **Snyk**: Commercial dependency scanning
+- **npm audit**: Built-in npm vulnerability scanning
+- **Dependabot**: Automated dependency updates
+- **Renovate**: Automated dependency updates
+
+### Implementation
+
+```bash
+# Scan with Grype
+grype dir:.
+
+# Scan container images
+grype docker:myimage:latest
+
+# npm audit
+npm audit
+
+# npm audit fix
+npm audit fix
+```
+
+### Automated Scanning
+
+- Integrate into CI/CD pipeline
+- Block deployments on critical vulnerabilities
+- Configure Dependabot/Renovate for automated updates
+- Review and test updates before merging
+
+### Rules
+
+- ✅ **DO**: Scan dependencies in CI/CD pipeline
+- ✅ **DO**: Block deployments on critical/high vulnerabilities
+- ✅ **DO**: Keep dependencies up-to-date
+- ✅ **DO**: Use automated dependency update tools
+- ✅ **DO**: Review dependency changes before merging
+- ✅ **DO**: Pin dependency versions (avoid ranges)
+- ❌ **DON'T**: Ignore vulnerability warnings
+- ❌ **DON'T**: Deploy with known critical vulnerabilities
+- ❌ **DON'T**: Use unmaintained dependencies
+
+---
+
+## 4. Dependency Policies
+
+### Policy Requirements
+
+- **Approved Sources**: Only use dependencies from approved registries
+- **License Compliance**: Ensure licenses are compatible
+- **Maintenance Status**: Prefer actively maintained dependencies
+- **Version Pinning**: Pin versions for reproducibility
+- **Security Advisories**: Monitor and respond to advisories
+
+### Implementation
+
+```yaml
+# .github/dependabot.yml
+version: 2
+updates:
+  - package-ecosystem: "npm"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 10
+    reviewers:
+      - "security-team"
+```
+
+### Rules
+
+- ✅ **DO**: Define dependency approval policies
+- ✅ **DO**: Check license compatibility
+- ✅ **DO**: Prefer dependencies with active maintenance
+- ✅ **DO**: Pin exact versions in production
+- ✅ **DO**: Use dependency lock files (package-lock.json, yarn.lock)
+- ❌ **DON'T**: Use dependencies from unverified sources
+- ❌ **DON'T**: Ignore license compliance
+- ❌ **DON'T**: Use version ranges in production
+
+---
+
+## 5. Build Integrity
+
+### Principle
+
+Ensure build artifacts come from trusted sources and haven't been tampered with. Use build attestations and signatures.
+
+### Implementation
+
+- Use hosted builds (not developer laptops)
+- Sign build artifacts with cryptographic signatures
+- Verify signatures before deployment
+- Use SLSA Level 2+ compliant builds
+- Store build logs and attestations
+
+### Rules
+
+- ✅ **DO**: Use hosted CI/CD for all builds
+- ✅ **DO**: Sign all build artifacts
+- ✅ **DO**: Verify signatures before deployment
+- ✅ **DO**: Store build attestations
+- ❌ **DON'T**: Build production artifacts locally
+- ❌ **DON'T**: Deploy unsigned artifacts
+
+---
+
+## Summary Checklist
+
+- [ ] Generate SBOMs for all releases
+- [ ] Sign build artifacts with provenance
+- [ ] Scan dependencies for vulnerabilities
+- [ ] Block deployments on critical vulnerabilities
+- [ ] Use automated dependency updates
+- [ ] Pin dependency versions
+- [ ] Monitor security advisories
+- [ ] Verify artifact signatures before deployment

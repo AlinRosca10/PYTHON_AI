@@ -1,0 +1,232 @@
+---
+description: "Service Level Objectives (SLOs), Service Level Indicators (SLIs), error budgets, and SLO-based alerting"
+globs:
+  - "**/monitoring/**/*.yaml"
+  - "**/prometheus/**/*.yaml"
+  - "**/grafana/**/*.json"
+  - "src/monitoring/**/*.ts"
+alwaysApply: false
+---
+
+# Metrics, SLOs & Alerting
+
+## Core Principle
+
+Define Service Level Objectives (SLOs) based on Service Level Indicators (SLIs), manage error budgets, and implement SLO-based alerting to reduce alert fatigue and focus on actual reliability threats.
+
+---
+
+## 1. Service Level Indicators (SLIs)
+
+### Principle
+
+SLIs are quantitative measures of service performance. Choose SLIs that directly reflect user experience.
+
+### Common SLIs
+
+#### Availability SLI
+
+- **Formula**: `(Total Valid Requests - Error Requests) / Total Valid Requests`
+- **Measurement**: Use Prometheus counter partitioned by status code
+- **Exclusions**: Server errors (5xx) count against SLI; client errors (4xx) typically excluded
+- **Example**: `http_requests_total{code="5xx"}`
+
+#### Latency SLI
+
+- **Formula**: `(Number of Requests < Threshold) / Total Valid Requests`
+- **Measurement**: Use Prometheus histogram to calculate percentage under threshold
+- **Example**: `http_request_duration_seconds_bucket` to calculate p95 < 500ms
+
+### Rules
+
+- ✅ **DO**: Measure SLIs that reflect user experience
+- ✅ **DO**: Use appropriate aggregation windows (e.g., 1-minute, 5-minute)
+- ✅ **DO**: Exclude client errors from availability calculations
+- ✅ **DO**: Measure latency at appropriate percentiles (p50, p95, p99)
+- ❌ **DON'T**: Use internal metrics that don't reflect user experience
+- ❌ **DON'T**: Mix client errors with server errors
+
+---
+
+## 2. Service Level Objectives (SLOs)
+
+### Principle
+
+SLOs are targets for SLIs over a measurement window. Set realistic targets based on business needs.
+
+### Example SLOs
+
+- **Critical Service**: 99.9% availability, 95% of requests < 500ms (28-day window)
+- **Internal Service**: 99.5% availability, 90% of requests < 1s (28-day window)
+- **User-Facing API**: 99.95% availability, 99% of requests < 2s (30-day window)
+
+### Error Budget
+
+Error Budget = 100% - SLO Target
+
+Example: 99.9% SLO = 0.1% error budget = 7.2 hours downtime per month
+
+### Rules
+
+- ✅ **DO**: Set SLOs based on business requirements
+- ✅ **DO**: Use rolling windows (e.g., 28-30 days)
+- ✅ **DO**: Calculate error budgets from SLOs
+- ✅ **DO**: Review and adjust SLOs periodically
+- ❌ **DON'T**: Set SLOs that are too easy (100% availability)
+- ❌ **DON'T**: Set SLOs that are too aggressive (99.999% for non-critical services)
+
+---
+
+## 3. Error Budget Management
+
+### Principle
+
+Error budget is the acceptable amount of unreliability. Track consumption rate to prevent exhaustion.
+
+### Burn Rate Calculation
+
+- **Burn Rate**: Rate at which error budget is consumed
+- **Fast Burn**: Will exhaust budget in hours/days (requires immediate attention)
+- **Slow Burn**: Will exhaust budget over weeks (can be addressed during business hours)
+
+### Decision Framework
+
+- **Error Budget Available**: Can deploy new features, take calculated risks
+- **Error Budget Depleted**: Focus on reliability, freeze deployments if necessary
+
+### Rules
+
+- ✅ **DO**: Track error budget consumption continuously
+- ✅ **DO**: Link deployment gates to error budget status
+- ✅ **DO**: Use error budget for feature vs reliability trade-offs
+- ❌ **DON'T**: Ignore error budget depletion
+- ❌ **DON'T**: Set SLOs without error budget consideration
+
+---
+
+## 4. Alerting Tiers
+
+### Principle
+
+Use two-tiered alerting strategy based on error budget burn rate to reduce alert fatigue.
+
+### Alert Tiers
+
+#### High-Severity Alert (Page)
+
+- **Trigger**: 2% of error budget consumed in 1 hour
+- **Action**: Immediate human intervention required
+- **Example**: Critical outage affecting large portion of users
+
+#### Low-Severity Alert (Ticket/Email)
+
+- **Trigger**: 5% of error budget consumed in 24 hours
+- **Action**: Address during business hours
+- **Example**: Persistent degradation that will exhaust budget over time
+
+### Implementation
+
+```yaml
+# Prometheus alert rule example
+groups:
+- name: slo_alerts
+  rules:
+  - alert: HighErrorBudgetBurn
+    expr: |
+      (
+        sum(rate(http_requests_total{code=~"5.."}[1h]))
+        /
+        sum(rate(http_requests_total[1h]))
+      )
+      > (0.001 * 0.02)  # 2% of 0.1% error budget per hour
+    for: 5m
+    labels:
+      severity: critical
+    annotations:
+      summary: "High error budget burn rate detected"
+```
+
+### Rules
+
+- ✅ **DO**: Use SLO-based alerting thresholds
+- ✅ **DO**: Implement two-tier alerting strategy
+- ✅ **DO**: Only page for fast burn scenarios
+- ✅ **DO**: Create tickets for slow burn scenarios
+- ❌ **DON'T**: Alert on every error
+- ❌ **DON'T**: Use arbitrary thresholds unrelated to SLOs
+- ❌ **DON'T**: Page for slow burn scenarios
+
+---
+
+## 5. Circuit Breaker Integration
+
+### Principle
+
+Link circuit breakers to SLO error budgets. Open circuit when error rate threatens error budget.
+
+### Implementation
+
+- Calculate error budget consumption rate
+- Open circuit breaker when consumption rate exceeds threshold
+- Use circuit breaker state as input to alerting
+
+### Configuration
+
+```typescript
+interface CircuitBreakerConfig {
+  sloAvailability: number;      // e.g., 0.999 (99.9%)
+  errorBudgetWindowMs: number;  // e.g., 2592000000 (30 days)
+  burnRateThreshold: number;    // e.g., 0.02 (2% per hour)
+}
+```
+
+### Rules
+
+- ✅ **DO**: Link circuit breakers to error budgets
+- ✅ **DO**: Open circuit when burn rate exceeds threshold
+- ✅ **DO**: Monitor circuit breaker state changes
+- ❌ **DON'T**: Use arbitrary circuit breaker thresholds
+- ❌ **DON'T**: Ignore error budget when configuring circuit breakers
+
+---
+
+## 6. Dashboard and Monitoring
+
+### Principle
+
+Create dashboards that show SLI, SLO, error budget, and burn rate for easy visibility.
+
+### Dashboard Components
+
+- Current SLI value (availability, latency)
+- SLO target line
+- Error budget remaining (percentage and time)
+- Burn rate graph
+- Recent alert history
+
+### Tools
+
+- **Grafana**: Dashboard visualization
+- **Prometheus**: Metrics collection and alerting
+- **SLI/SLO Libraries**: Pre-built SLI/SLO calculators
+
+### Rules
+
+- ✅ **DO**: Create dedicated SLO dashboards
+- ✅ **DO**: Make dashboards accessible to all engineers
+- ✅ **DO**: Include error budget visualization
+- ✅ **DO**: Update dashboards when SLOs change
+- ❌ **DON'T**: Hide SLO dashboards from team
+- ❌ **DON'T**: Use dashboards without alerting
+
+---
+
+## Summary Checklist
+
+- [ ] Define SLIs that reflect user experience
+- [ ] Set SLOs based on business requirements
+- [ ] Calculate and track error budgets
+- [ ] Implement two-tier alerting (fast burn vs slow burn)
+- [ ] Link circuit breakers to error budgets
+- [ ] Create SLO dashboards
+- [ ] Review SLOs periodically

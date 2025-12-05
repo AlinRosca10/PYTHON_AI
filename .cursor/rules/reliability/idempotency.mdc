@@ -1,0 +1,56 @@
+---
+description: "Rules for ensuring idempotency in data-modifying operations"
+globs:
+  - "src/api/**/*.ts"
+  - "src/services/**/*.ts"
+  - "src/routes/**/*.ts"
+alwaysApply: false
+---
+
+# Idempotency Rules
+
+## Core Principle
+
+All data-modifying operations (API endpoints, scripts, background jobs) **must** be idempotent. Retrying a request must not create duplicates or corrupt state.
+
+## Implementation Patterns
+
+### For API Endpoints (POST/PATCH)
+
+1. **Idempotency-Key Header Pattern**:
+   - Client generates a unique key (UUID) and sends it in `Idempotency-Key` header
+   - Server checks a fast-access store (Redis) for this key
+   - If found, return cached response
+   - If not found, process request, store key+response with TTL (24-48 hours), return result
+   - **MUST** use distributed lock to prevent race conditions
+
+2. **Database-Level Constraints**:
+   - Use `UPSERT` operations (`INSERT... ON CONFLICT DO UPDATE`)
+   - Apply unique constraints on business-relevant IDs (e.g., `transaction_id`, `order_id`)
+
+### For Background Jobs
+
+- Message handlers **MUST** be idempotent
+- Use idempotency checks before processing
+- Implement idempotency keys for message processing
+
+## DO
+
+- ✅ Use Idempotency-Key headers for non-idempotent operations
+- ✅ Use UPSERT operations at database level
+- ✅ Validate idempotency in unit and integration tests
+- ✅ Implement distributed locks for Redis-backed idempotency checks
+- ✅ Return the same response for duplicate requests
+
+## DON'T
+
+- ❌ Use GET requests for state changes
+- ❌ Implement idempotency with non-atomic SELECT + INSERT patterns (race condition)
+- ❌ Ignore idempotency for background jobs and message handlers
+- ❌ Create duplicate records when retrying failed requests
+
+## Testing
+
+- Test with concurrent requests using the same idempotency key
+- Test retry scenarios with network failures
+- Verify no duplicate records are created

@@ -1,0 +1,62 @@
+---
+description: "Rules for using immutable data structures"
+globs:
+  - "**/*.ts"
+  - "**/*.tsx"
+  - "**/*.js"
+  - "**/*.jsx"
+alwaysApply: false
+---
+
+# Immutability Rules
+
+## Core Principle
+
+Prefer immutable data structures. Do not mutate global state or function arguments. Return new objects instead.
+
+## Implementation Guidelines
+
+### Data Structures
+
+- Use `const` declarations for variables that won't be reassigned
+- Use `readonly` properties in TypeScript classes/interfaces
+- Use `Object.freeze()` for objects that should never be modified
+- Return new objects with updated state instead of mutating existing ones
+
+### Function Design
+
+- Functions should not mutate their arguments
+- If you need to update state, return a new object/array
+- Avoid side effects that modify external state
+
+## DO
+
+- ✅ Use `const` instead of `let` whenever possible
+- ✅ Return new objects with updated properties
+- ✅ Use immutable array methods (`map`, `filter`, `reduce`) instead of mutating methods
+- ✅ Use spread operator for object/array updates: `{ ...obj, newProp: value }`
+
+## DON'T
+
+- ❌ Mutate function arguments directly
+- ❌ Use array mutating methods (`push`, `pop`, `splice`) on shared arrays
+- ❌ Modify global state
+- ❌ Reassign variables that could be `const`
+
+## Examples
+
+### Good: Immutable Update
+
+```typescript
+function updateUser(user: User, updates: Partial<User>): User {
+  return { ...user, ...updates };
+}
+```
+
+### Bad: Mutating Update
+
+```typescript
+function updateUser(user: User, updates: Partial<User>): void {
+  Object.assign(user, updates); // Mutates original object
+}
+```

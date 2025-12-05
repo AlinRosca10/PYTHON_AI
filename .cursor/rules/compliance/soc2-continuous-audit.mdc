@@ -1,0 +1,189 @@
+---
+description: "SOC 2 compliance, continuous audit readiness, NIST SSDF alignment, and automated evidence generation"
+globs:
+  - ".github/workflows/**/*.yml"
+  - "**/policies/**/*.rego"
+  - "**/*.tf"
+alwaysApply: false
+---
+
+# Compliance & Regulatory Alignment
+
+## Core Principle
+
+Meet compliance requirements (SOC 2, NIST SSDF) by building auditable evidence directly into automated workflows, minimizing friction and manual effort.
+
+---
+
+## 1. SOC 2 Trust Services Criteria
+
+### Principle
+
+SOC 2 is based on five Trust Services Criteria. Generate evidence automatically from CI/CD pipelines instead of manually gathering documentation.
+
+### Criteria Mapping
+
+| SOC 2 Criteria | Automated Evidence from CI/CD |
+|----------------|------------------------------|
+| **Security (CC6)** | IAM policies (IaC), RBAC configurations, JIT access logs, MFA enforcement, secret scan results |
+| **Availability (A1)** | SLO dashboards, error budget reports, postmortem action item tracking, rollback logs |
+| **Change Management (CC3)** | Git commit history, PR approval records, pipeline execution logs, test results |
+| **Processing Integrity (PI1)** | Input validation schemas, transaction logs, idempotency key usage logs |
+| **Confidentiality** | Encryption at rest/transit evidence, access logs, data classification |
+
+### Evidence Generation
+
+- **Version Control**: Git history provides audit trail
+- **Pipeline Logs**: CI/CD execution logs show controls in action
+- **IaC**: Infrastructure as Code shows configuration at point in time
+- **Test Results**: Automated test execution proves code quality
+- **Scan Results**: Security scans show vulnerability management
+
+### Rules
+
+- ✅ **DO**: Generate evidence automatically from pipelines
+- ✅ **DO**: Store evidence in version-controlled repositories
+- ✅ **DO**: Map pipeline artifacts to SOC 2 criteria
+- ✅ **DO**: Maintain audit trail for all changes
+- ❌ **DON'T**: Generate evidence manually
+- ❌ **DON'T**: Store evidence outside version control
+- ❌ **DON'T**: Lose evidence after changes
+
+---
+
+## 2. Continuous Audit Readiness
+
+### Principle
+
+Maintain a state of continuous readiness by version-controlling policies and maintaining immutable evidence chains.
+
+### Policies as Code
+
+- Define security and compliance policies as code (OPA/Rego)
+- Version control all policy files
+- Review policies in pull requests
+- Track policy changes over time
+
+### Immutable Evidence Chain
+
+- Trace production deployments back through pipeline logs
+- Link to specific tests passed, policies enforced, approvals granted
+- Connect to original source code commit
+- Maintain timestamped revision history
+
+### Process Maturity
+
+- Complete, time-stamped revision history for all procedural updates
+- Demonstrates process maturity to auditors
+- Shows continuous improvement over time
+
+### Rules
+
+- ✅ **DO**: Define policies as code
+- ✅ **DO**: Maintain immutable evidence chains
+- ✅ **DO**: Track all changes with timestamps
+- ✅ **DO**: Demonstrate process maturity
+- ❌ **DON'T**: Maintain policies outside version control
+- ❌ **DON'T**: Lose evidence of historical changes
+
+---
+
+## 3. Automated Evidence Collection
+
+### Principle
+
+Automate collection of compliance evidence to reduce manual effort and ensure consistency.
+
+### Evidence Sources
+
+- **Git Commits**: Code changes and approvals
+- **CI/CD Logs**: Pipeline execution and test results
+- **Security Scans**: Vulnerability and secret detection results
+- **Infrastructure**: IaC configurations and deployments
+- **Access Logs**: Authentication and authorization events
+
+### Evidence Storage
+
+- Store in version-controlled repository
+- Organize by compliance framework and criteria
+- Include metadata (timestamp, service, version)
+- Make searchable and auditable
+
+### Rules
+
+- ✅ **DO**: Automate evidence collection
+- ✅ **DO**: Store evidence in version control
+- ✅ **DO**: Organize evidence by framework/criteria
+- ✅ **DO**: Include metadata with evidence
+- ❌ **DON'T**: Collect evidence manually
+- ❌ **DON'T**: Store evidence in silos
+- ❌ **DON'T**: Lose evidence over time
+
+---
+
+## 4. NIST SSDF Alignment
+
+### Principle
+
+Align practices with NIST Secure Software Development Framework (SSDF) for secure software development.
+
+### SSDF Practices
+
+- **PO.1**: Prepare the organization
+- **PO.2**: Protect the software
+- **PO.3**: Produce well-secured software
+- **PO.4**: Respond to vulnerabilities
+
+### Implementation
+
+- Use secure development practices (input validation, least privilege)
+- Implement security scanning (SAST, SCA, dependency scanning)
+- Maintain software inventory (SBOMs)
+- Track and respond to vulnerabilities
+
+### Rules
+
+- ✅ **DO**: Align with NIST SSDF practices
+- ✅ **DO**: Implement secure development practices
+- ✅ **DO**: Use security scanning tools
+- ✅ **DO**: Maintain software inventory
+- ❌ **DON'T**: Ignore SSDF alignment
+- ❌ **DON'T**: Skip security practices
+
+---
+
+## 5. Audit Preparation
+
+### Principle
+
+Prepare for audits by maintaining organized, accessible evidence and documentation.
+
+### Audit Readiness Checklist
+
+- [ ] All policies defined as code
+- [ ] Evidence automatically collected
+- [ ] Evidence organized by framework/criteria
+- [ ] Audit trail maintained for all changes
+- [ ] Documentation up-to-date
+- [ ] Evidence searchable and accessible
+
+### Rules
+
+- ✅ **DO**: Maintain audit readiness continuously
+- ✅ **DO**: Organize evidence for easy access
+- ✅ **DO**: Keep documentation current
+- ✅ **DO**: Prepare audit packages in advance
+- ❌ **DON'T**: Prepare for audits at the last minute
+- ❌ **DON'T**: Scramble to find evidence during audit
+
+---
+
+## Summary Checklist
+
+- [ ] Map pipeline artifacts to SOC 2 criteria
+- [ ] Generate evidence automatically
+- [ ] Define policies as code
+- [ ] Maintain immutable evidence chains
+- [ ] Align with NIST SSDF practices
+- [ ] Organize evidence for audits
+- [ ] Maintain continuous audit readiness

@@ -1,0 +1,195 @@
+---
+description: "Blameless postmortems, knowledge sharing, Green/Red zones, and AI pair-programming protocols"
+globs:
+  - "**/postmortems/**/*.md"
+  - "**/incidents/**/*.md"
+alwaysApply: false
+---
+
+# Developer Culture & Workflow
+
+## Core Principle
+
+Build a culture of psychological safety, continuous learning, and shared ownership. Turn failures into systemic improvements through blameless analysis and knowledge sharing.
+
+---
+
+## 1. Blameless Postmortems
+
+### Principle
+
+Focus on understanding systemic causes of incidents, not assigning individual blame. This fosters psychological safety and encourages transparency.
+
+### Postmortem Structure
+
+- **Incident Summary**: What happened, when, impact
+- **Timeline**: Chronological sequence of events
+- **Root Cause Analysis**: Systemic factors (not blame)
+- **Impact Assessment**: Users affected, duration, business impact
+- **Action Items**: Concrete improvements with owners and deadlines
+- **Lessons Learned**: What we learned, what we'd do differently
+
+### Postmortem SLA
+
+- **Promptness**: Written and circulated within 7 days of incident
+- **Completeness**: All action items have owners and tracking numbers
+- **Closure**: P1 items closed within one sprint
+
+### Rules
+
+- ✅ **DO**: Write postmortems within 7 days
+- ✅ **DO**: Focus on systemic causes, not blame
+- ✅ **DO**: Include concrete action items with owners
+- ✅ **DO**: Track action items to closure
+- ✅ **DO**: Use data (logs, metrics, traces) to support analysis
+- ❌ **DON'T**: Blame individuals
+- ❌ **DON'T**: Skip action items
+- ❌ **DON'T**: Write vague or incomplete postmortems
+
+---
+
+## 2. Knowledge Sharing Rituals
+
+### Principle
+
+Share insights from postmortems widely to maximize organizational learning and prevent knowledge silos.
+
+### Postmortem Reading Clubs
+
+- Regular meetings to review postmortems from other teams
+- Cross-pollinate knowledge across teams
+- Identify patterns of failure affecting multiple teams
+
+### Cross-Team Reviews
+
+- Include stakeholders from all affected teams
+- Ensure shared understanding of root causes
+- Align on remediation plan
+
+### Centralized Repository
+
+- Store all postmortems in searchable, company-wide repository
+- Tag by category, service, severity
+- Use as knowledge base for engineers
+
+### Rules
+
+- ✅ **DO**: Share postmortems company-wide
+- ✅ **DO**: Hold regular postmortem reading clubs
+- ✅ **DO**: Include cross-team stakeholders
+- ✅ **DO**: Maintain searchable postmortem repository
+- ❌ **DON'T**: Keep postmortems in silos
+- ❌ **DON'T**: Skip knowledge sharing rituals
+
+---
+
+## 3. Green vs Red Zones
+
+### Principle
+
+Partition codebase into risk-based zones to apply appropriate levels of rigor and speed.
+
+### Green Zone
+
+- **Characteristics**: Low-risk areas (UI, internal tools, stateless services)
+- **Approach**: Rapid experimentation, fast feedback loops
+- **Controls**: Automated tests, basic code review
+- **Goal**: Maximum velocity for idea validation
+
+### Red Zone
+
+- **Characteristics**: High-risk areas (auth, payments, core business logic)
+- **Approach**: Deliberate and methodical
+- **Controls**: Mandatory senior review, threat modeling, stricter SLOs
+- **Goal**: Maximum safety and reliability
+
+### Implementation
+
+- Codify zones using directory structures or ownership tags
+- Automate guardrails (CI requires additional approvals for Red Zone changes)
+- Document zone boundaries clearly
+
+### Rules
+
+- ✅ **DO**: Clearly define Green and Red zones
+- ✅ **DO**: Apply appropriate controls per zone
+- ✅ **DO**: Automate zone-based enforcement
+- ✅ **DO**: Review and adjust zones periodically
+- ❌ **DON'T**: Treat all code with same level of rigor
+- ❌ **DON'T**: Change zone boundaries arbitrarily
+
+---
+
+## 4. AI Pair-Programming Protocols
+
+### Principle
+
+Use AI as a disciplined co-creator, not just a code generator. Developers act as architects and reviewers.
+
+### Context-Rich Prompting
+
+- Provide rich context: task description, code snippets, architectural notes
+- Include relevant issue tickets and API schemas
+- Reference existing patterns and constraints
+
+### Developer Roles
+
+- **Architect**: Define high-level architecture and patterns
+- **Reviewer**: Validate AI output for correctness, security, performance
+- **Integrator**: Refine, test, and integrate AI-generated code
+
+### Iterative Refinement Loop
+
+1. Developer describes task with context
+2. AI provides initial implementation
+3. Developer reviews and refines
+4. Developer tests and integrates
+5. Repeat until satisfied
+
+### Rules
+
+- ✅ **DO**: Provide rich context to AI
+- ✅ **DO**: Review all AI-generated code
+- ✅ **DO**: Test AI output thoroughly
+- ✅ **DO**: Act as architect and reviewer
+- ❌ **DON'T**: Blindly accept AI output
+- ❌ **DON'T**: Skip code review for AI-generated code
+- ❌ **DON'T**: Use AI for critical Red Zone code without review
+
+---
+
+## 5. Continuous Learning Culture
+
+### Principle
+
+Foster a culture where failures are learning opportunities and knowledge is shared proactively.
+
+### Practices
+
+- **Regular Tech Talks**: Share learnings and new techniques
+- **Documentation**: Keep documentation up-to-date and accessible
+- **Mentorship**: Pair junior and senior developers
+- **Experimentation**: Dedicate time for experimentation and learning
+
+### Rules
+
+- ✅ **DO**: Share learnings proactively
+- ✅ **DO**: Keep documentation current
+- ✅ **DO**: Encourage experimentation
+- ✅ **DO**: Support mentorship and pairing
+- ❌ **DON'T**: Hoard knowledge
+- ❌ **DON'T**: Punish experimentation failures
+
+---
+
+## Summary Checklist
+
+- [ ] Write blameless postmortems within 7 days
+- [ ] Track action items to closure
+- [ ] Share postmortems company-wide
+- [ ] Hold postmortem reading clubs
+- [ ] Define Green and Red zones
+- [ ] Apply appropriate controls per zone
+- [ ] Use context-rich prompting with AI
+- [ ] Review all AI-generated code
+- [ ] Foster continuous learning culture

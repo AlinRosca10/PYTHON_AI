@@ -1,0 +1,188 @@
+---
+description: "Structured logging with trace IDs, span IDs, and correlation IDs"
+globs:
+  - "src/**/*.ts"
+  - "src/**/*.js"
+alwaysApply: false
+---
+
+# Structured Logging & Observability
+
+## Core Principle
+
+Use structured logging in JSON format with trace IDs, span IDs, and correlation IDs. This enables effective debugging, monitoring, and distributed tracing.
+
+## Structured Log Format
+
+### Required Fields
+
+All logs must include:
+
+```typescript
+interface StructuredLog {
+  timestamp: string;        // ISO 8601 format
+  level: string;            // error, warn, info, debug
+  message: string;          // Human-readable message
+  traceId: string;          // W3C Trace Context trace ID
+  spanId?: string;          // Current span ID
+  service: string;          // Service name
+  environment: string;      // prod, staging, dev
+  
+  // Request context
+  correlationId?: string;   // Request correlation ID
+  userId?: string;          // User ID (if applicable)
+  requestId?: string;       // HTTP request ID
+  
+  // Error context (for errors)
+  error?: {
+    name: string;
+    message: string;
+    stack?: string;
+  };
+  
+  // Additional context
+  [key: string]: any;       // Custom fields
+}
+```
+
+## W3C Trace Context
+
+Use W3C Trace Context standard for distributed tracing:
+
+```
+traceparent: 00-{trace-id}-{parent-id}-{trace-flags}
+```
+
+- **trace-id**: 32 hex characters (16 bytes)
+- **parent-id**: 16 hex characters (8 bytes)
+- **trace-flags**: 2 hex characters (sampling flag)
+
+### Propagation
+
+- Extract `traceparent` from incoming HTTP headers
+- Generate new trace ID if not present
+- Pass trace context to downstream services
+- Include in all log entries
+
+## RED Metrics (Services)
+
+Track **Rate, Errors, Duration** for all services:
+
+- **Rate**: Requests per second
+- **Errors**: Error rate (errors / total requests)
+- **Duration**: Request latency (p50, p95, p99)
+
+```typescript
+interface REDMetrics {
+  rate: number;              // requests/second
+  errors: number;            // errors/second
+  errorRate: number;         // errors / total (percentage)
+  duration: {
+    p50: number;             // 50th percentile latency (ms)
+    p95: number;             // 95th percentile latency (ms)
+    p99: number;             // 99th percentile latency (ms)
+    avg: number;             // Average latency (ms)
+  };
+}
+```
+
+## USE Metrics (Resources)
+
+Track **Utilization, Saturation, Errors** for resources:
+
+- **Utilization**: Percentage of time resource is busy
+- **Saturation**: Degree of queuing (queue length)
+- **Errors**: Error count or rate
+
+## Log Levels
+
+- **ERROR**: System errors requiring attention
+- **WARN**: Warning conditions that may need attention
+- **INFO**: Informational messages (request logs, state changes)
+- **DEBUG**: Detailed debug information (development only)
+
+## DO
+
+- ✅ Use JSON format for all logs
+- ✅ Include trace ID in every log entry
+- ✅ Include correlation ID for request tracking
+- ✅ Log structured error objects (not just strings)
+- ✅ Never log PII, secrets, or sensitive data
+- ✅ Use appropriate log levels
+- ✅ Include relevant context (user ID, request path, etc.)
+- ✅ Send logs to centralized system (OpenTelemetry Collector)
+
+## DON'T
+
+- ❌ Use unstructured string concatenation
+- ❌ Log sensitive information (passwords, API keys, PII)
+- ❌ Log full stack traces in production (log error name/message)
+- ❌ Use console.log in production
+- ❌ Mix log formats (always use JSON)
+- ❌ Include stack traces in info-level logs
+
+## OpenTelemetry Integration
+
+Use OpenTelemetry for unified telemetry:
+
+```typescript
+import { trace } from '@opentelemetry/api';
+
+const tracer = trace.getTracer('my-service');
+
+async function processRequest() {
+  const span = tracer.startSpan('processRequest');
+  
+  try {
+    // Your code here
+    span.setAttribute('user.id', userId);
+    span.setStatus({ code: SpanStatusCode.OK });
+  } catch (error) {
+    span.setStatus({ 
+      code: SpanStatusCode.ERROR,
+      message: error.message 
+    });
+    span.recordException(error);
+    throw error;
+  } finally {
+    span.end();
+  }
+}
+```
+
+## PII Redaction
+
+Never log PII. Use redaction patterns:
+
+- Email addresses
+- Phone numbers
+- Social security numbers
+- Credit card numbers
+- IP addresses (if required by policy)
+
+## Example Log Entry
+
+```json
+{
+  "timestamp": "2025-11-27T21:30:00.000Z",
+  "level": "info",
+  "message": "Request completed",
+  "traceId": "4bf92f3577b34da6a3ce929d0e0e4736",
+  "spanId": "00f067aa0ba902b7",
+  "service": "api-service",
+  "environment": "production",
+  "correlationId": "req-12345",
+  "method": "GET",
+  "path": "/api/users/123",
+  "statusCode": 200,
+  "durationMs": 45
+}
+```
+
+## Testing
+
+- Verify trace IDs propagate correctly
+- Test PII redaction
+- Verify structured format
+- Test log aggregation and search
+- Verify error logging captures context

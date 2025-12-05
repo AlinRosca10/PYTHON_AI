@@ -1,0 +1,314 @@
+---
+description: "Comprehensive security rules covering secrets management, input validation, OWASP Top 10, least privilege, and workload identity"
+globs:
+  - "**/*.ts"
+  - "**/*.js"
+  - "**/*.tsx"
+  - "**/*.jsx"
+  - "**/*.py"
+alwaysApply: false
+---
+
+# Comprehensive Security & Privacy Rules
+
+## Core Principle
+
+Security cannot be an afterthought. Integrate security controls into the development workflow through automation, validation, and least privilege principles.
+
+---
+
+## 1. Secrets Management
+
+### Principle
+
+**NEVER** hardcode secrets, API keys, passwords, or tokens. Always use environment variables or secret management services.
+
+### Critical Rules
+
+- ❌ Never commit secrets to version control
+- ❌ Never hardcode API keys, passwords, or tokens
+- ❌ Never log secrets in error messages or debug output
+- ❌ Never include secrets in code examples or documentation
+
+### Implementation
+
+#### Local Development
+
+```typescript
+// ✅ GOOD: Use environment variables
+const apiKey = process.env.API_KEY;
+if (!apiKey) {
+  throw new Error('API_KEY environment variable is required');
+}
+```
+
+#### Production
+
+- Use AWS Secrets Manager, HashiCorp Vault, or Azure Key Vault
+- Use Workload Identity (AWS IRSA, GCP Workload Identity) for cloud-native apps
+- Rotate secrets regularly
+- Use least privilege access policies
+
+### Secret Scanning
+
+- Run secret scanning tools (Gitleaks, TruffleHog) in CI/CD
+- Set up pre-commit hooks to prevent committing secrets
+- Enable GitHub Push Protection for secret detection
+
+### Rules
+
+- ✅ **DO**: Use placeholders like `<YOUR_API_KEY>` in code examples
+- ✅ **DO**: Use environment variables or secret managers
+- ✅ **DO**: Scan codebase for secrets before committing
+- ✅ **DO**: Use different secrets for different environments
+- ❌ **DON'T**: Hardcode any credentials or secrets
+- ❌ **DON'T**: Commit `.env` files with real secrets
+- ❌ **DON'T**: Share secrets via insecure channels
+
+---
+
+## 2. Input Validation
+
+### Principle
+
+**Trust NO input.** Validate all external input using schemas. Fail fast on invalid data.
+
+### Implementation
+
+Use schema-based validation libraries:
+
+- **TypeScript/JavaScript**: Zod
+- **Python**: Pydantic
+- **Other**: JSON Schema, Joi
+
+### Example
+
+```typescript
+import { z } from 'zod';
+
+const CreateUserSchema = z.object({
+  email: z.string().email(),
+  name: z.string().min(1).max(100),
+  age: z.number().int().min(18).max(120)
+});
+
+// Validate and fail fast
+const result = CreateUserSchema.safeParse(req.body);
+if (!result.success) {
+  return res.status(400).json({ errors: result.error.errors });
+}
+```
+
+### Rules
+
+- ✅ **DO**: Validate all API request bodies
+- ✅ **DO**: Validate all function arguments
+- ✅ **DO**: Use schema validation libraries
+- ✅ **DO**: Return 400 errors immediately on invalid data
+- ✅ **DO**: Sanitize user-generated content before rendering
+- ❌ **DON'T**: Trust external input
+- ❌ **DON'T**: Skip validation "for speed"
+- ❌ **DON'T**: Expose internal validation errors to users
+
+---
+
+## 3. OWASP Top 10 Protection
+
+### A01: Broken Access Control
+
+- ✅ Always verify resource ownership (e.g., `WHERE user_id = session.user.id`)
+- ✅ Use authorization middleware/filters
+- ✅ Test authorization logic thoroughly
+- ❌ **DON'T**: Return data without ownership checks
+
+### A02: Cryptographic Failures
+
+- ✅ Use strong encryption algorithms (AES-256, RSA-2048+)
+- ✅ Encrypt sensitive data at rest and in transit
+- ✅ Use secure random number generators
+- ✅ Store passwords with bcrypt/argon2 (never plain text)
+- ❌ **DON'T**: Use weak encryption or deprecated algorithms
+
+### A03: Injection
+
+#### SQL Injection Prevention
+
+```typescript
+// ✅ GOOD: Parameterized queries
+await db.query('SELECT * FROM users WHERE id = ?', [userId]);
+
+// ❌ BAD: String concatenation
+await db.query(`SELECT * FROM users WHERE id = ${userId}`);
+```
+
+- ✅ Always use parameterized queries or ORMs
+- ✅ Never concatenate strings into queries
+- ✅ Validate and sanitize all input
+
+### A04: Insecure Design
+
+- ✅ Threat model your application
+- ✅ Design security in from the start
+- ✅ Use secure defaults
+- ❌ **DON'T**: Add security as an afterthought
+
+### A05: Security Misconfiguration
+
+- ✅ Remove default credentials
+- ✅ Disable unnecessary services
+- ✅ Keep dependencies up-to-date
+- ✅ Use secure configuration defaults
+- ❌ **DON'T**: Use default passwords
+- ❌ **DON'T**: Expose debug information in production
+
+### A06: Vulnerable and Outdated Components
+
+- ✅ Scan dependencies regularly (npm audit, Snyk)
+- ✅ Keep dependencies up-to-date
+- ✅ Use Dependabot/Renovate for automated updates
+- ✅ Block deployments with critical vulnerabilities
+- ❌ **DON'T**: Ignore vulnerability warnings
+
+### A07: Identification and Authentication Failures
+
+- ✅ Use OAuth 2.0, JWT with secure signing
+- ✅ Implement MFA where appropriate
+- ✅ Use secure session management
+- ✅ Implement account lockout after failed attempts
+- ❌ **DON'T**: Store passwords in plain text
+- ❌ **DON'T**: Use weak session management
+
+### A08: Software and Data Integrity Failures
+
+- ✅ Sign software artifacts (SBOMs, provenance)
+- ✅ Verify signatures before deployment
+- ✅ Use dependency pinning
+- ✅ Monitor for tampering
+- ❌ **DON'T**: Deploy unsigned artifacts
+
+### A09: Security Logging and Monitoring Failures
+
+- ✅ Log security events (auth failures, access denied)
+- ✅ Monitor for suspicious activity
+- ✅ Set up alerts for security incidents
+- ✅ Retain logs appropriately
+- ❌ **DON'T**: Skip security event logging
+
+### A10: Server-Side Request Forgery (SSRF)
+
+- ✅ Validate and sanitize URLs
+- ✅ Use allowlists for external requests
+- ✅ Use network segmentation
+- ✅ Disable internal network access where possible
+- ❌ **DON'T**: Make requests to user-provided URLs without validation
+
+### Rules
+
+- ✅ **DO**: Address all OWASP Top 10 vulnerabilities
+- ✅ **DO**: Test for vulnerabilities regularly
+- ✅ **DO**: Keep security knowledge up-to-date
+- ❌ **DON'T**: Ignore OWASP guidelines
+
+---
+
+## 4. Least Privilege
+
+### Principle
+
+Start with "Deny All" default and whitelist only necessary permissions.
+
+### IAM Policies
+
+- Begin with deny-all policy
+- Explicitly grant only required permissions
+- Use fine-grained permissions
+- Review and audit permissions regularly
+
+### Just-in-Time (JIT) Access
+
+- Implement JIT access for privileged operations
+- Provide temporary, on-demand access
+- Audit all JIT access requests
+- Automatically revoke access after use
+
+### Rules
+
+- ✅ **DO**: Start with deny-all defaults
+- ✅ **DO**: Grant minimum required permissions
+- ✅ **DO**: Use JIT access for privileged operations
+- ✅ **DO**: Review permissions regularly
+- ❌ **DON'T**: Grant overly broad permissions
+- ❌ **DON'T**: Use standing privileged access
+
+---
+
+## 5. Workload Identity
+
+### Principle
+
+Use cloud-native workload identity to avoid storing static credentials in applications.
+
+### AWS: IAM Roles for Service Accounts (IRSA)
+
+- Associate Kubernetes Service Account with AWS IAM Role
+- Pod uses Kubernetes-issued OIDC token to assume role
+- Receive temporary credentials automatically
+
+### GCP: Workload Identity
+
+- Configure Kubernetes Service Account to act as Google Service Account
+- Automatic authentication with GCP services
+- No static credentials needed
+
+### Azure: Azure AD Workload Identity
+
+- Federate identity between Kubernetes Service Account and Azure AD
+- Pods use federated identity to request access tokens
+- Temporary credentials only
+
+### Rules
+
+- ✅ **DO**: Use workload identity instead of static credentials
+- ✅ **DO**: Eliminate long-lived credentials
+- ✅ **DO**: Use temporary, short-lived credentials
+- ❌ **DON'T**: Store static credentials in applications
+- ❌ **DON'T**: Hardcode cloud credentials
+
+---
+
+## 6. Data Privacy
+
+### Principle
+
+Protect Personally Identifiable Information (PII) and comply with GDPR/CCPA requirements.
+
+### PII Handling
+
+- Never log PII (email addresses, phone numbers, SSNs)
+- Encrypt PII in databases
+- Implement data retention policies
+- Provide data deletion capabilities
+
+### Rules
+
+- ✅ **DO**: Encrypt PII at rest and in transit
+- ✅ **DO**: Implement data retention policies
+- ✅ **DO**: Provide data deletion capabilities
+- ✅ **DO**: Never log PII
+- ❌ **DON'T**: Store PII unencrypted
+- ❌ **DON'T**: Log sensitive information
+
+---
+
+## Summary Checklist
+
+- [ ] Never hardcode secrets
+- [ ] Use secret management services
+- [ ] Validate all input with schemas
+- [ ] Protect against OWASP Top 10
+- [ ] Apply least privilege principles
+- [ ] Use workload identity for cloud services
+- [ ] Protect PII and comply with regulations
+- [ ] Scan for secrets and vulnerabilities
+- [ ] Monitor security events
+- [ ] Keep dependencies up-to-date

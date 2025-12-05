@@ -1,0 +1,75 @@
+---
+description: "Modular monolith first approach - avoid premature microservices"
+globs:
+  - "src/**/*.ts"
+  - "src/**/*.js"
+alwaysApply: false
+---
+
+# Modular Monolith First Architecture
+
+## Core Principle
+
+Start with a **Modular Monolith** architecture. Avoid premature microservice adoption which can introduce overwhelming complexity and ~30% operational overhead.
+
+## Architecture Decision Framework
+
+### When to Use Modular Monolith
+
+- ✅ Starting a new project or feature
+- ✅ Team size < 10 developers
+- ✅ Need rapid iteration and deployment
+- ✅ Single database is sufficient
+- ✅ Clear module boundaries can be defined
+
+### When to Extract to Microservices
+
+A module should "graduate" to a microservice only when **all** of these are true:
+
+1. **Independent Scaling Need**: Module has vastly different resource requirements (CPU, memory)
+2. **Team Ownership**: Dedicated sub-team needs to own this domain independently
+3. **Fault Isolation Requirement**: Module's failure must not impact core application
+4. **Technology Stack Divergence**: Requires incompatible language/database/stack
+5. **Domain Bounded Context is Clear**: Well-defined boundaries with minimal dependencies
+
+## Modular Monolith Structure
+
+- Organize code into clear, loosely-coupled modules
+- Define explicit module boundaries and interfaces
+- Use dependency injection to reduce coupling
+- Each module should have a single responsibility
+
+## Decision Matrix
+
+| Factor | Modular Monolith | Microservices |
+|--------|------------------|---------------|
+| **Initial Development Velocity** | High | Low |
+| **Operational Overhead** | Low | High |
+| **Data Consistency** | High (ACID transactions) | Low (eventual consistency) |
+| **Scalability** | Low (scale entire unit) | High (scale independently) |
+| **Team Autonomy** | Low (shared codebase) | High (independent deploy) |
+| **Fault Isolation** | Low | High |
+| **Testability** | Medium (E2E simpler) | High (test in isolation) |
+
+## DO
+
+- ✅ Start with modular monolith
+- ✅ Design clear module boundaries from the start
+- ✅ Use dependency injection between modules
+- ✅ Extract modules only when all 5 criteria are met
+- ✅ Prefer ACID transactions within monolith
+
+## DON'T
+
+- ❌ Split into microservices without clear need
+- ❌ Create microservices for organizational boundaries alone
+- ❌ Ignore operational overhead of microservices
+- ❌ Split too early "just in case"
+- ❌ Use microservices to solve team communication issues
+
+## Migration Path
+
+1. Start with well-structured modular monolith
+2. Monitor for extraction signals (scaling, team growth, tech divergence)
+3. Extract modules gradually, starting with highest-value candidates
+4. Maintain clear boundaries to make extraction easier

@@ -1,0 +1,80 @@
+---
+description: "Rules for implementing least privilege access control"
+alwaysApply: true
+---
+
+# Least Privilege Rules
+
+## Core Principle
+
+Apply the principle of least privilege in all access controls. Grant minimum required access and nothing more.
+
+## Implementation Guidelines
+
+### IAM Policies
+
+- Start with "Deny All" default
+- Whitelist only necessary permissions
+- Grant fine-grained permissions for specific resources
+- Review and audit permissions regularly
+
+### Database Access
+
+- Create database users with minimal required privileges
+- Separate read-only and read-write access
+- Don't use admin/root accounts for applications
+
+### Application Permissions
+
+- Use role-based access control (RBAC)
+- Implement permission checks at the application level
+- Verify permissions for every sensitive operation
+
+### Just-in-Time (JIT) Access
+
+- Implement JIT access for privileged operations
+- Grant temporary, on-demand access
+- Automatically revoke access after use
+- Audit all privileged access
+
+## DO
+
+- ✅ Assume "Deny All" default and whitelist permissions
+- ✅ Grant only minimum required access
+- ✅ Use separate credentials for different environments
+- ✅ Implement JIT access for privileged operations
+- ✅ Regularly review and audit permissions
+
+## DON'T
+
+- ❌ Grant admin/root access when limited access will do
+- ❌ Use overly broad permissions ("*" or "allow all")
+- ❌ Share credentials between environments
+- ❌ Grant permanent privileged access
+
+## Examples
+
+### Good: Least Privilege IAM Policy
+
+```json
+{
+  "Effect": "Deny",
+  "Action": "*",
+  "Resource": "*"
+},
+{
+  "Effect": "Allow",
+  "Action": "s3:GetObject",
+  "Resource": "arn:aws:s3:::my-bucket/read-only/*"
+}
+```
+
+### Bad: Overly Permissive Policy
+
+```json
+{
+  "Effect": "Allow",
+  "Action": "*",
+  "Resource": "*"
+}
+```

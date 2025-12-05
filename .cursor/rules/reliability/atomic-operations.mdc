@@ -1,0 +1,74 @@
+---
+description: "Rules for ensuring atomic database operations and transactions"
+globs:
+  - "src/db/**/*.ts"
+  - "src/repositories/**/*.ts"
+  - "src/services/**/*.ts"
+alwaysApply: false
+---
+
+# Atomic Operations Rules
+
+## Core Principle
+
+Database writes must be transactional. Use "All or Nothing" logic to prevent partial state updates.
+
+## Implementation Patterns
+
+### Single Database Transactions
+
+- Wrap all related database operations in a transaction
+- Use `BEGIN`, `COMMIT`, `ROLLBACK` or ORM transaction methods
+- Ensure atomicity for operations that must succeed or fail together
+
+### Multi-Step Operations
+
+For operations involving multiple steps:
+- Wrap all steps in a single transaction
+- If any step fails, roll back all changes
+- Never leave the database in an inconsistent state
+
+### Distributed Systems
+
+For operations across multiple services/databases:
+- Use distributed transaction patterns when high consistency is required
+- Consider orchestration (e.g., Temporal) for complex workflows
+- Use choreography (Saga pattern) for loosely coupled services with eventual consistency
+
+## DO
+
+- ✅ Wrap multi-step database operations in transactions
+- ✅ Use database transactions for operations that must be atomic
+- ✅ Implement proper error handling with rollback
+- ✅ Test transaction rollback scenarios
+
+## DON'T
+
+- ❌ Perform multiple database writes without a transaction when they must succeed together
+- ❌ Leave database in inconsistent state if one operation fails
+- ❌ Mix transactional and non-transactional operations in the same business logic
+
+## Examples
+
+### Good: Atomic Transaction
+
+```typescript
+async function transferFunds(from: string, to: string, amount: number) {
+  await db.transaction(async (trx) => {
+    await trx('accounts').where('id', from).decrement('balance', amount);
+    await trx('accounts').where('id', to).increment('balance', amount);
+    await trx('transactions').insert({ from, to, amount });
+    // All or nothing - if any fails, all roll back
+  });
+}
+```
+
+### Bad: Non-Atomic Operations
+
+```typescript
+async function transferFunds(from: string, to: string, amount: number) {
+  await db('accounts').where('id', from).decrement('balance', amount);
+  // If this fails, we've already deducted from 'from' account!
+  await db('accounts').where('id', to).increment('balance', amount);
+}
+```

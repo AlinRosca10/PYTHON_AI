@@ -1,0 +1,128 @@
+---
+description: "Exponential backoff with jitter for retry logic"
+globs:
+  - "src/api/**/*.ts"
+  - "src/services/**/*.ts"
+  - "src/clients/**/*.ts"
+alwaysApply: false
+---
+
+# Exponential Backoff + Jitter
+
+## Core Principle
+
+Implement exponential backoff with jitter for all retry logic. This prevents retry storms and allows services to recover gracefully from transient failures.
+
+## Implementation Guidelines
+
+### Exponential Backoff Formula
+
+- **Base Delay**: Start with a base delay (e.g., 100ms)
+- **Exponential Growth**: Multiply delay by 2^attempt (1s, 2s, 4s, 8s...)
+- **Max Delay**: Cap at maximum (e.g., 30 seconds)
+- **Jitter**: Add random variation (±25-50%) to prevent synchronized retries
+
+### Configuration Parameters
+
+```typescript
+interface RetryConfig {
+  maxAttempts: number;        // e.g., 5
+  baseDelayMs: number;        // e.g., 100
+  maxDelayMs: number;         // e.g., 30000
+  jitterPercent: number;      // e.g., 0.25 (25%)
+  backoffMultiplier: number;  // e.g., 2
+}
+```
+
+### Per-Attempt vs End-to-End Timeouts
+
+- **Per-Attempt Timeout**: Timeout for each individual attempt (e.g., 5 seconds)
+- **End-to-End Timeout**: Total time budget for all attempts (e.g., 15 seconds)
+- Always set both to prevent hanging requests
+
+### Retryable vs Non-Retryable Errors
+
+**Retryable Errors** (transient failures):
+- Network timeouts
+- 429 (Rate Limited)
+- 500-503 (Server Errors)
+- Connection errors
+
+**Non-Retryable Errors** (permanent failures):
+- 400 (Bad Request)
+- 401 (Unauthorized)
+- 404 (Not Found)
+- 409 (Conflict)
+
+## DO
+
+- ✅ Use exponential backoff for all external API calls
+- ✅ Add jitter to prevent thundering herd
+- ✅ Set both per-attempt and end-to-end timeouts
+- ✅ Retry only on transient failures
+- ✅ Log retry attempts with attempt number and delay
+- ✅ Implement circuit breaker pattern for persistent failures
+
+## DON'T
+
+- ❌ Use fixed delays (no backoff)
+- ❌ Retry indefinitely
+- ❌ Retry on non-retryable errors (400, 401, etc.)
+- ❌ Synchronize retries across clients
+- ❌ Ignore timeout configuration
+
+## Example Implementation
+
+```typescript
+async function retryWithBackoff<T>(
+  fn: () => Promise<T>,
+  config: RetryConfig
+): Promise<T> {
+  let lastError: Error;
+  
+  for (let attempt = 0; attempt < config.maxAttempts; attempt++) {
+    try {
+      return await Promise.race([
+        fn(),
+        new Promise<T>((_, reject) => 
+          setTimeout(() => reject(new Error('Timeout')), config.perAttemptTimeoutMs)
+        )
+      ]);
+    } catch (error) {
+      lastError = error as Error;
+      
+      // Don't retry non-retryable errors
+      if (isNonRetryableError(error)) {
+        throw error;
+      }
+      
+      // Don't retry on last attempt
+      if (attempt === config.maxAttempts - 1) {
+        break;
+      }
+      
+      // Calculate delay with exponential backoff
+      const baseDelay = Math.min(
+        config.baseDelayMs * Math.pow(config.backoffMultiplier, attempt),
+        config.maxDelayMs
+      );
+      
+      // Add jitter
+      const jitter = baseDelay * config.jitterPercent * (Math.random() * 2 - 1);
+      const delay = baseDelay + jitter;
+      
+      await sleep(delay);
+    }
+  }
+  
+  throw lastError!;
+}
+```
+
+## Testing
+
+- Test with various failure scenarios
+- Verify exponential growth of delays
+- Verify jitter reduces synchronization
+- Test timeout behavior
+- Test circuit breaker integration

@@ -1,0 +1,176 @@
+---
+description: "SLSA-2 compliance requirements for secure CI/CD pipelines"
+globs:
+  - ".github/workflows/**/*.yml"
+  - ".github/workflows/**/*.yaml"
+  - ".gitlab-ci.yml"
+  - "Jenkinsfile"
+alwaysApply: false
+---
+
+# SLSA-2 Compliance Rules
+
+## Core Principle
+
+Achieve SLSA Level 2 compliance for all CI/CD pipelines. This ensures version-controlled source, hosted builds, and authenticated provenance, eliminating "built-on-laptop" drift.
+
+## SLSA Level 2 Requirements
+
+### 1. Version Controlled Source
+
+- ✅ All source code in version control
+- ✅ All changes tracked in VCS history
+- ✅ No manual modifications to build artifacts
+
+### 2. Hosted Builds
+
+- ✅ All builds run in hosted CI/CD environment
+- ✅ No builds on developer laptops
+- ✅ Builds run in isolated, ephemeral environments
+
+### 3. Authenticated Provenance
+
+- ✅ Generate build attestations (provenance)
+- ✅ Sign attestations with cryptographic keys
+- ✅ Store attestations in tamper-proof system
+- ✅ Verify attestations before deployment
+
+## Implementation Checklist
+
+### Version Control
+
+- [ ] All source code in Git repository
+- [ ] No manual file uploads to deployment systems
+- [ ] All configuration files version controlled
+- [ ] Commit history shows all changes
+
+### Build Environment
+
+- [ ] Use hosted CI/CD (GitHub Actions, GitLab CI, etc.)
+- [ ] Builds run in isolated containers/environments
+- [ ] No local builds for production artifacts
+- [ ] Build environment is reproducible
+
+### Provenance Generation
+
+- [ ] Generate build attestations for all artifacts
+- [ ] Include build metadata (source commit, build time, builder ID)
+- [ ] Sign attestations using Sigstore/Cosign
+- [ ] Store attestations alongside artifacts
+
+### Artifact Storage
+
+- [ ] Store artifacts in secure, versioned registry
+- [ ] Tag artifacts with provenance
+- [ ] Verify provenance before pulling artifacts
+- [ ] Use content-addressable storage when possible
+
+## Tools & Standards
+
+### Provenance Generation
+
+- **Tekton Chains**: Kubernetes-native provenance generation
+- **Sigstore/Cosign**: Signing and verification
+- **SLSA Provenance Format**: Standard attestation format
+
+### Example: GitHub Actions with SLSA
+
+```yaml
+name: Build and Attest
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Build artifact
+        run: |
+          npm ci
+          npm run build
+          
+      - name: Generate provenance
+        uses: slsa-framework/github-actions-demo@v1.4.0
+        with:
+          artifact-path: dist/
+          
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: artifacts
+          path: dist/
+```
+
+## Build Security
+
+### Secrets Management
+
+- Use secret management (GitHub Secrets, Vault)
+- Never hardcode secrets in workflows
+- Rotate secrets regularly
+- Use least-privilege access
+
+### Build Isolation
+
+- Run builds in isolated containers
+- Use minimal base images
+- Remove unnecessary dependencies
+- Scan for vulnerabilities
+
+## DO
+
+- ✅ Use hosted CI/CD for all builds
+- ✅ Generate and sign provenance for artifacts
+- ✅ Verify provenance before deployment
+- ✅ Store all source code in version control
+- ✅ Use ephemeral build environments
+- ✅ Implement build reproducibility
+
+## DON'T
+
+- ❌ Build production artifacts locally
+- ❌ Skip provenance generation
+- ❌ Deploy unsigned artifacts
+- ❌ Store secrets in code
+- ❌ Use long-lived build credentials
+- ❌ Allow manual artifact uploads
+
+## Verification
+
+### Pre-Deployment Checks
+
+```bash
+# Verify provenance signature
+cosign verify-attestation \
+  --type slsaprovenance \
+  --certificate-oidc-issuer https://token.actions.githubusercontent.com \
+  artifact@sha256:abc123
+
+# Verify build metadata
+slsa-verifier verify-artifact \
+  --provenance-path provenance.json \
+  --source-uri github.com/org/repo \
+  artifact.bin
+```
+
+## Compliance Evidence
+
+Maintain evidence for audits:
+
+- Build logs showing hosted execution
+- Provenance attestations
+- Signed artifacts
+- Source code commit history
+- Deployment verification logs
+
+## Testing
+
+- Test provenance generation
+- Verify attestation signatures
+- Test provenance verification
+- Verify no local builds in production path
+- Test build reproducibility

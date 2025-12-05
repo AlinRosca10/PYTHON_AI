@@ -1,0 +1,141 @@
+{
+  "version": "0.1.1",
+  "installedAt": "2025-12-05T19:43:56.640Z",
+  "rules": [
+    {
+      "id": "idempotency",
+      "category": "reliability",
+      "filePath": ".cursor\\rules\\reliability\\idempotency.mdc"
+    },
+    {
+      "id": "immutability",
+      "category": "reliability",
+      "filePath": ".cursor\\rules\\reliability\\immutability.mdc"
+    },
+    {
+      "id": "pure-functions",
+      "category": "reliability",
+      "filePath": ".cursor\\rules\\reliability\\pure-functions.mdc"
+    },
+    {
+      "id": "atomic-operations",
+      "category": "reliability",
+      "filePath": ".cursor\\rules\\reliability\\atomic-operations.mdc"
+    },
+    {
+      "id": "comprehensive-reliability",
+      "category": "reliability",
+      "filePath": ".cursor\\rules\\reliability\\comprehensive-reliability.mdc"
+    },
+    {
+      "id": "secrets-management",
+      "category": "security",
+      "filePath": ".cursor\\rules\\security\\secrets-management.mdc"
+    },
+    {
+      "id": "input-validation",
+      "category": "security",
+      "filePath": ".cursor\\rules\\security\\input-validation.mdc"
+    },
+    {
+      "id": "owasp-protection",
+      "category": "security",
+      "filePath": ".cursor\\rules\\security\\owasp-complete.mdc"
+    },
+    {
+      "id": "least-privilege",
+      "category": "security",
+      "filePath": ".cursor\\rules\\security\\least-privilege.mdc"
+    },
+    {
+      "id": "comprehensive-security",
+      "category": "security",
+      "filePath": ".cursor\\rules\\security\\comprehensive-security.mdc"
+    },
+    {
+      "id": "kiss",
+      "category": "coding-style",
+      "filePath": ".cursor\\rules\\coding-style\\kiss-simplicity.mdc"
+    },
+    {
+      "id": "type-safety",
+      "category": "coding-style",
+      "filePath": ".cursor\\rules\\coding-style\\type-safety.mdc"
+    },
+    {
+      "id": "error-handling",
+      "category": "coding-style",
+      "filePath": ".cursor\\rules\\coding-style\\error-handling.mdc"
+    },
+    {
+      "id": "modular-monolith-first",
+      "category": "architecture",
+      "filePath": ".cursor\\rules\\architecture\\modular-monolith-first.mdc"
+    },
+    {
+      "id": "circuit-breaker",
+      "category": "resilience",
+      "filePath": ".cursor\\rules\\resilience\\circuit-breaker.mdc"
+    },
+    {
+      "id": "exponential-backoff",
+      "category": "resilience",
+      "filePath": ".cursor\\rules\\resilience\\exponential-backoff.mdc"
+    },
+    {
+      "id": "structured-logging",
+      "category": "observability",
+      "filePath": ".cursor\\rules\\observability\\structured-logging.mdc"
+    },
+    {
+      "id": "slsa-compliance",
+      "category": "cicd",
+      "filePath": ".cursor\\rules\\cicd\\slsa-compliance.mdc"
+    },
+    {
+      "id": "sbom-provenance",
+      "category": "supply-chain",
+      "filePath": ".cursor\\rules\\supply-chain\\sbom-provenance.mdc"
+    },
+    {
+      "id": "policy-as-code",
+      "category": "policy",
+      "filePath": ".cursor\\rules\\policy\\policy-as-code.mdc"
+    },
+    {
+      "id": "slos-alerting",
+      "category": "metrics",
+      "filePath": ".cursor\\rules\\metrics\\slos-alerting.mdc"
+    },
+    {
+      "id": "blameless-postmortems",
+      "category": "culture",
+      "filePath": ".cursor\\rules\\culture\\blameless-postmortems.mdc"
+    },
+    {
+      "id": "soc2-continuous-audit",
+      "category": "compliance",
+      "filePath": ".cursor\\rules\\compliance\\soc2-continuous-audit.mdc"
+    },
+    {
+      "id": "react-nextjs",
+      "category": "frameworks",
+      "filePath": ".cursor\\rules\\frameworks\\react-nextjs.mdc"
+    },
+    {
+      "id": "typescript",
+      "category": "frameworks",
+      "filePath": ".cursor\\rules\\frameworks\\typescript.mdc"
+    },
+    {
+      "id": "non-atomic-select-insert",
+      "category": "anti-patterns",
+      "filePath": ".cursor\\rules\\anti-patterns\\non-atomic-select-insert.mdc"
+    },
+    {
+      "id": "premature-microservices",
+      "category": "anti-patterns",
+      "filePath": ".cursor\\rules\\anti-patterns\\premature-microservices.mdc"
+    }
+  ]
+}

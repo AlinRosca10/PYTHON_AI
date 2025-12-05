@@ -1,0 +1,63 @@
+---
+description: "KISS principle - Keep It Simple, Stupid"
+globs:
+  - "**/*.ts"
+  - "**/*.js"
+  - "**/*.tsx"
+alwaysApply: false
+---
+
+# KISS Principle - Keep It Simple
+
+## Core Principle
+
+Write code that a Junior Developer can understand. Avoid complex one-liners or obscure language features.
+
+## Guidelines
+
+### Simplicity Over Cleverness
+
+- Prefer readability over clever code
+- Break complex logic into smaller, understandable pieces
+- Use meaningful variable and function names
+- Avoid unnecessary abstractions
+
+### Code Clarity
+
+- Write self-documenting code
+- Use clear, descriptive names
+- Keep functions small and focused
+- One responsibility per function
+
+## DO
+
+- ✅ Write simple, readable code
+- ✅ Use descriptive variable and function names
+- ✅ Break complex logic into smaller functions
+- ✅ Add comments for "why", not "what"
+- ✅ Prefer explicit over implicit
+
+## DON'T
+
+- ❌ Write overly clever one-liners
+- ❌ Use obscure language features unnecessarily
+- ❌ Create unnecessary abstractions
+- ❌ Write code that requires deep domain knowledge to understand
+- ❌ Optimize prematurely
+
+## Examples
+
+### Good: Simple and Clear
+
+```typescript
+function calculateDiscount(price: number, discountPercent: number): number {
+  const discountAmount = price * (discountPercent / 100);
+  return price - discountAmount;
+}
+```
+
+### Bad: Overly Clever
+
+```typescript
+const calc = (p, d) => p - (p * d / 100); // ❌ Hard to understand
+```

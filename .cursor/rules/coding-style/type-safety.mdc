@@ -1,0 +1,74 @@
+---
+description: "Rules for strict type safety in TypeScript"
+globs:
+  - "**/*.ts"
+  - "**/*.tsx"
+alwaysApply: false
+---
+
+# Type Safety Rules
+
+## Core Principle
+
+Use strict typing. No `any` types unless absolutely necessary and commented.
+
+## TypeScript Configuration
+
+- Enable `strict` mode in `tsconfig.json`
+- Enable `strictNullChecks`
+- Avoid `any` type - use `unknown` instead
+- Use type inference where appropriate
+- Define explicit return types for functions
+
+## Type Definitions
+
+### Avoid `any`
+
+- ❌ Don't use `any` type
+- ✅ Use `unknown` when type is truly unknown
+- ✅ Use proper type definitions or generics
+
+### Use Type Guards
+
+- Use type guards to narrow types
+- Use discriminated unions for type safety
+- Leverage TypeScript's type narrowing
+
+## DO
+
+- ✅ Enable strict TypeScript mode
+- ✅ Use explicit types for function parameters and returns
+- ✅ Use `unknown` instead of `any` when type is unknown
+- ✅ Use type guards and type narrowing
+- ✅ Define interfaces for complex objects
+
+## DON'T
+
+- ❌ Use `any` type
+- ❌ Disable TypeScript strict checks
+- ❌ Use type assertions (`as`) to bypass type checking
+- ❌ Ignore TypeScript errors with `@ts-ignore`
+
+## Examples
+
+### Good: Proper Types
+
+```typescript
+interface User {
+  id: string;
+  email: string;
+  age: number;
+}
+
+function getUser(id: string): Promise<User | null> {
+  // ...
+}
+```
+
+### Bad: Using `any`
+
+```typescript
+function getUser(id: any): any {
+  // ❌ No type safety
+}
+```

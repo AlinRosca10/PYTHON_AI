@@ -1,0 +1,62 @@
+---
+description: "Rules for writing pure functions with deterministic output"
+globs:
+  - "**/*.ts"
+  - "**/*.js"
+alwaysApply: false
+---
+
+# Pure Functions Rules
+
+## Core Principle
+
+Prioritize pure functions: deterministic output based solely on input, with no observable side effects.
+
+## Definition
+
+A pure function:
+- Returns the same output for the same input (deterministic)
+- Has no side effects (doesn't modify external state, doesn't perform I/O)
+- Doesn't depend on or modify global variables
+
+## Benefits
+
+- ✅ Inherently testable
+- ✅ Predictable and easier to reason about
+- ✅ Easy to cache (memoization)
+- ✅ Thread-safe and concurrency-safe
+- ✅ Easier for AI assistants to understand and validate
+
+## DO
+
+- ✅ Write pure functions for business logic
+- ✅ Separate pure logic from I/O operations
+- ✅ Use pure functions as building blocks for complex operations
+- ✅ Test pure functions with simple input/output pairs
+
+## DON'T
+
+- ❌ Mix I/O operations with pure business logic
+- ❌ Access global state in functions
+- ❌ Perform side effects (logging, database writes) in pure functions
+- ❌ Depend on external mutable state
+
+## Examples
+
+### Good: Pure Function
+
+```typescript
+function calculateTotal(items: CartItem[]): number {
+  return items.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+}
+```
+
+### Bad: Function with Side Effects
+
+```typescript
+function calculateTotal(items: CartItem[]): number {
+  console.log('Calculating total...'); // Side effect
+  total = items.reduce(...); // Modifies global variable
+  return total;
+}
+```

@@ -1,0 +1,82 @@
+---
+description: "Rules for validating all external input to prevent injection attacks"
+globs:
+  - "src/api/**/*.ts"
+  - "src/routes/**/*.ts"
+  - "src/controllers/**/*.ts"
+alwaysApply: false
+---
+
+# Input Validation Rules
+
+## Core Principle
+
+**Trust NO input.** Validate all external input - API request bodies, query parameters, file uploads, and function arguments.
+
+## Implementation Guidelines
+
+### Schema-Based Validation
+
+- Use validation libraries: **Zod** (TypeScript), **Pydantic** (Python), **Joi** (JavaScript)
+- Define explicit schemas for all API request bodies
+- Validate data types, formats, lengths, and allowed values
+- Validate at the API boundary (before business logic)
+
+### Fail Fast
+
+- Return `400 Bad Request` immediately on invalid data
+- Don't let malformed data propagate deeper into the system
+- Provide clear error messages about what validation failed
+
+### Sanitization
+
+- Sanitize user-generated content before rendering (prevent XSS)
+- Use context-aware output encoding libraries
+- Escape output appropriately for HTML, JavaScript, CSS contexts
+
+## DO
+
+- ✅ Validate all API inputs using schemas
+- ✅ Validate data types, ranges, formats, and constraints
+- ✅ Return 400 errors immediately on invalid input
+- ✅ Sanitize output to prevent XSS
+- ✅ Validate file uploads (type, size, content)
+
+## DON'T
+
+- ❌ Trust any external input without validation
+- ❌ Allow invalid data to reach business logic layer
+- ❌ Expose internal error details in validation responses
+- ❌ Skip validation for "internal" APIs
+
+## Examples
+
+### Good: Schema Validation
+
+```typescript
+import { z } from 'zod';
+
+const createUserSchema = z.object({
+  email: z.string().email(),
+  age: z.number().int().min(18).max(120),
+  name: z.string().min(1).max(100)
+});
+
+async function createUser(req: Request, res: Response) {
+  try {
+    const validated = createUserSchema.parse(req.body);
+    // Process validated data...
+  } catch (error) {
+    return res.status(400).json({ error: 'Invalid input' });
+  }
+}
+```
+
+### Bad: No Validation
+
+```typescript
+async function createUser(req: Request, res: Response) {
+  const { email, age, name } = req.body; // ❌ No validation!
+  // Directly using untrusted input...
+}
+```

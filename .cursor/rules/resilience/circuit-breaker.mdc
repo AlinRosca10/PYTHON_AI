@@ -1,0 +1,133 @@
+---
+description: "Circuit breaker pattern for fault tolerance and graceful degradation"
+globs:
+  - "src/api/**/*.ts"
+  - "src/services/**/*.ts"
+  - "src/clients/**/*.ts"
+alwaysApply: false
+---
+
+# Circuit Breaker Pattern
+
+## Core Principle
+
+Implement circuit breakers to prevent cascading failures. When a service fails repeatedly, the circuit "opens" and stops sending requests, allowing the service to recover.
+
+## Circuit States
+
+### 1. Closed (Normal Operation)
+- Requests flow through normally
+- Track success/failure rates
+- Monitor error budget consumption
+
+### 2. Open (Failure Detected)
+- Requests immediately fail fast (no remote call)
+- Error budget threshold exceeded
+- Timer starts for half-open transition
+
+### 3. Half-Open (Testing Recovery)
+- Allow limited requests through (e.g., 1-5)
+- If successful, close circuit
+- If failures persist, reopen circuit
+
+## Configuration Based on SLOs
+
+Link circuit breaker thresholds to **error budgets**:
+
+```typescript
+interface CircuitBreakerConfig {
+  // SLO-based thresholds
+  errorRateThreshold: number;      // e.g., 0.02 (2% error rate)
+  requestVolumeThreshold: number;  // Minimum requests before opening
+  
+  // Timing
+  openDurationMs: number;          // How long to stay open (e.g., 60000)
+  halfOpenMaxRequests: number;     // Max requests in half-open state
+  
+  // Error budget calculation
+  sloAvailability: number;         // e.g., 0.999 (99.9%)
+  windowSizeMs: number;            // Error budget window (e.g., 3600000)
+}
+```
+
+### Example: 99.9% Availability SLO
+
+- **Error Budget**: 0.1% (100% - 99.9%)
+- **Burn Rate Alert**: 2% of budget per hour
+- **Circuit Opens**: When 2% of error budget consumed in 1 hour
+
+## Implementation Patterns
+
+### Error Budget Calculation
+
+```typescript
+function calculateErrorBudget(slo: number, windowMs: number): number {
+  const windowSeconds = windowMs / 1000;
+  const allowedFailures = (1 - slo) * windowSeconds;
+  return allowedFailures;
+}
+
+function shouldOpenCircuit(
+  errorRate: number,
+  errorBudget: number,
+  consumed: number
+): boolean {
+  // Open if consuming error budget too fast
+  const burnRate = consumed / (errorBudget * 0.02); // 2% per hour
+  return burnRate > 1 && errorRate > 0.02;
+}
+```
+
+### Graceful Degradation
+
+When circuit is open, provide fallback:
+
+```typescript
+async function callServiceWithCircuitBreaker(): Promise<Response> {
+  if (circuitBreaker.isOpen()) {
+    // Return cached response or default value
+    return getCachedResponse() || getDefaultResponse();
+  }
+  
+  try {
+    const response = await callService();
+    circuitBreaker.recordSuccess();
+    return response;
+  } catch (error) {
+    circuitBreaker.recordFailure();
+    throw error;
+  }
+}
+```
+
+## DO
+
+- ✅ Link thresholds to SLO error budgets
+- ✅ Implement half-open state for recovery testing
+- ✅ Provide graceful fallbacks when circuit is open
+- ✅ Monitor circuit state transitions
+- ✅ Log circuit opens with reason and duration
+- ✅ Use distributed state for shared circuit breakers
+
+## DON'T
+
+- ❌ Use arbitrary thresholds unrelated to SLOs
+- ❌ Open circuit on single failure
+- ❌ Stay in open state indefinitely
+- ❌ Ignore graceful degradation
+- ❌ Create circuit breakers per request (use shared instances)
+
+## Integration with Other Patterns
+
+- **Retry Logic**: Disable retries when circuit is open
+- **Timeouts**: Circuit breaker can trigger on timeout errors
+- **Monitoring**: Alert on circuit opens
+- **Load Balancing**: Route traffic away from failed services
+
+## Testing
+
+- Test state transitions (closed → open → half-open → closed)
+- Test error budget calculations
+- Test graceful degradation
+- Test concurrent requests during state transitions
+- Verify no retries when circuit is open
