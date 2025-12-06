@@ -1,4 +1,6 @@
-# Rețeaua euronală
+# Rețeaua neuronală
+
+
 
 ## O rețea neuronală este un model matematico-informatic inspirat de modul în care funcționează creierul uman. Este folosită pentru a învăța tipare din date — fie că vorbim de imagini, text, sunet sau valori numerice.
 

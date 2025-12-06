@@ -1,4 +1,8 @@
-# ✔️ 1. Varianta ta cu sintaxa alternativă foreach : ... endforeach
+# Comparare sintaxa PHP foreach
+
+
+
+# ✔️ 1. Varianta cu sintaxa alternativă foreach : ... endforeach
 ## <?php foreach($books as $key_book => $book) : ?>
 ##     <h1>Titlul cărții: <?php echo $book['title']; ?></h1>
 ##     <h2>Autorul cărții: <?php echo $book['author']; ?></h2>
@@ -12,7 +16,7 @@ Sintaxa aceasta este foarte utilă în fișiere care conțin mult HTML.
 
 E mai curată, mai lizibilă, mai ușor de întreținut.
 
-# ✔️ 2. Varianta ta cu concatenare în interiorul blocului foreach { ... }
+# ✔️ 2. Varianta cu concatenare în interiorul blocului foreach { ... }
 ### foreach ($books as $book) {
 ###    echo "<h1>$book[title]</h1>"
 ###       . "<h2>$book[author]</h2>"

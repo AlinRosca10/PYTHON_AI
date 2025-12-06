@@ -1,3 +1,5 @@
+import os
+import time
 from flask import Flask, render_template_string, abort, url_for
 import markdown2
 import json
@@ -6,11 +8,34 @@ from lesson_loader import load_lessons_json
 
 app = Flask(__name__)
 
-# Încarcă lecțiile generate din JSON
-LESSONS = load_lessons_json("generated_lessons.json")
+# Încarcă lecțiile generate din JSON 
+# Reîncărcare automată făra restart în Flask
+LESSONS = {}
+LESSONS_MTIME = 0   # timestamp last load
+
+
+def load_lessons_dynamic(path="generated_lessons.json"):
+    global LESSONS, LESSONS_MTIME
+
+    try:
+        mtime = os.path.getmtime(path)
+    except FileNotFoundError:
+        LESSONS = {}
+        LESSONS_MTIME = 0
+        return LESSONS
+
+    # dacă fișierul nu s-a modificat → folosește cache
+    if mtime == LESSONS_MTIME:
+        return LESSONS
+
+    # dacă fișierul S-A modificat → reîncarcă
+    LESSONS = load_lessons_json(path)
+    LESSONS_MTIME = mtime
+    print(f"[INFO] Reloaded lessons ({len(LESSONS)})")
+    return LESSONS
 
 BASE_TEMPLATE = """
-<!doctype html>
+<!Doctype html>
 <html lang="ro">
 <head>
   <meta charset="utf-8">
@@ -64,7 +89,9 @@ BASE_TEMPLATE = """
 
 @app.route('/')
 def index():
+    LESSONS = load_lessons_dynamic()
     items = [(slug, data['title']) for slug, data in LESSONS.items()]
+    items.sort()
     list_html = ['<div class="lesson-list">']
     for slug, title in items:
         href = url_for('lesson', slug=slug)
@@ -75,6 +102,7 @@ def index():
 
 @app.route('/lesson/<slug>')
 def lesson(slug):
+    LESSONS = load_lessons_dynamic()
     data = LESSONS.get(slug)
     if not data:
         abort(404)
