@@ -1,22 +1,22 @@
-Termenii „scalabilitate” și „interoperabilitate” sunt adesea folosiți în tehnologie, IT, inginerie și managementul sistemelor. Iată explicațiile lor, pe scurt și clar:
+### Termenii „scalabilitate” și „interoperabilitate” sunt adesea folosiți în tehnologie, IT, inginerie și managementul sistemelor. Iată explicațiile lor, pe scurt și clar:
 
-#🔹 Scalabilitate
+# 🔹 Scalabilitate
 
-Scalabilitatea este capacitatea unui sistem, aplicații sau infrastructuri de a-și mări performanța sau capacitatea atunci când crește volumul de utilizatori, date sau operațiuni.
+## Scalabilitatea este capacitatea unui sistem, aplicații sau infrastructuri de a-și mări performanța sau capacitatea atunci când crește volumul de utilizatori, date sau operațiuni.
 
 Exemple:
 
-O aplicație web care poate gestiona 1.000 de utilizatori simultan, dar poate scala la 100.000 fără să se blocheze.
+## O aplicație web care poate gestiona 1.000 de utilizatori simultan, dar poate scala la 100.000 fără să se blocheze.
 
-Un server care permite adăugarea de resurse (CPU, RAM) pentru a crește performanța.
+## Un server care permite adăugarea de resurse (CPU, RAM) pentru a crește performanța.
 
-Tipuri:
+# Tipuri:
 
-# Scalare verticală (adăugarea de resurse hardware unui singur server)
+## Scalare verticală (adăugarea de resurse hardware unui singur server)
 
-# Scalare orizontală (adăugarea de noi servere în paralel)
+## Scalare orizontală (adăugarea de noi servere în paralel)
 
-##🔹 Interoperabilitate
+# 🔹 Interoperabilitate
 
 Interoperabilitatea este abilitatea a două sau mai multe sisteme, aplicații sau componente de a comunica, colabora și schimba date între ele fără probleme, chiar dacă au fost create de producători diferiți.
 
@@ -28,7 +28,7 @@ Interconectarea sistemelor medicale pentru a transfera date despre pacienți în
 
 Dispozitive IoT de la producători diferiți care comunică prin protocolul MQTT.
 
-Tipuri:
+# Tipuri:
 
 Interoperabilitate tehnică – compatibilitate la nivel de protocoale și formate de date.
 
