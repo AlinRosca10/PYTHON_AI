@@ -5,16 +5,12 @@ import sys
 import time
 from pathlib import Path
 
-from lesson_loader import load_lessons_from_md
+from lesson_loader import load_lessons_from_md, save_lessons_json
 
 
-def generate(lessons_dir: str, output: str) -> int:
-    """Load lessons from markdown and write as JSON. Returns number of lessons."""
+def generate(lessons_dir, output):
     lessons = load_lessons_from_md(lessons_dir)
-    out_path = Path(output)
-    out_path.parent.mkdir(parents=True, exist_ok=True)
-    with out_path.open("w", encoding="utf8") as f:
-        json.dump(lessons, f, indent=2, ensure_ascii=False)
+    save_lessons_json(lessons, output)
     logging.info("Generated %s with %d lessons", output, len(lessons))
     return len(lessons)
 
@@ -65,15 +61,15 @@ def watch_mode(lessons_dir: str, output: str):
 
 
 def main(argv=None):
-    parser = argparse.ArgumentParser(description="Generate lessons JSON from markdown source files.")
+    parser = argparse.ArgumentParser()
     parser.add_argument("--lessons-dir", default="lessons", help="Directory containing lesson .md files (default: lessons)")
     parser.add_argument("--output", default="generated_lessons.json", help="Output JSON file (default: generated_lessons.json)")
     parser.add_argument("--watch", action="store_true", help="Run in watch mode and regenerate on file changes (requires watchdog)")
     parser.add_argument("--log", default="info", help="Logging level (debug, info, warning, error)")
-    args = parser.parse_args(argv)
+    args = parser.parse_args()
 
-    level = getattr(logging, args.log.upper(), logging.INFO)
-    logging.basicConfig(level=level, format="%(asctime)s %(levelname)s: %(message)s")
+    logging.basicConfig(level=logging.INFO)
+    generate(args.lessons_dir, args.output)
 
     try:
         n = generate(args.lessons_dir, args.output)
