@@ -8,77 +8,111 @@ from pathlib import Path
 from lesson_loader import load_lessons_from_md, save_lessons_json
 
 
-def generate(lessons_dir, output):
+# ==========================================================
+# Core generator
+# ==========================================================
+
+def generate(lessons_dir: Path, output: Path) -> int:
+    """Load lessons from directory and write them into a JSON file."""
+    start = time.time()
+
     lessons = load_lessons_from_md(lessons_dir)
     save_lessons_json(lessons, output)
-    logging.info("Generated %s with %d lessons", output, len(lessons))
+
+    logging.info("Generated %s with %d lessons (%.1f ms)",
+                 output, len(lessons), (time.time() - start) * 1000)
+
     return len(lessons)
 
 
-def watch_mode(lessons_dir: str, output: str):
-    """Start a filesystem watcher that regenerates JSON on markdown changes.
+# ==========================================================
+# Watch mode (optional, using watchdog)
+# ==========================================================
 
-    This uses watchdog if available; otherwise falls back to single run.
-    """
+def watch_mode(lessons_dir: Path, output: Path):
+    """Watch filesystem for changes in .md files and regenerate JSON."""
+
     try:
         from watchdog.observers import Observer
-        from watchdog.events import PatternMatchingEventHandler
+        from watchdog.events import FileSystemEventHandler
     except Exception:
-        logging.warning("watchdog is not installed — running single generation instead.")
+        logging.warning("watchdog is not installed — running single generation only.")
         generate(lessons_dir, output)
         return
 
-    patterns = ["*.md", "*.markdown"]
-    ignore_patterns = None
-    ignore_directories = False
-    case_sensitive = False
-
-    class _Handler(PatternMatchingEventHandler):
-        def __init__(self, *args, **kwargs):
-            super().__init__(*args, **kwargs)
+    class Handler(FileSystemEventHandler):
+        """Handles modifications to markdown files with debounce."""
+        debounce_interval = 0.3
+        last_run = 0
 
         def on_any_event(self, event):
-            logging.info("Detected change (%s). Regenerating...", event.src_path)
-            try:
-                n = generate(lessons_dir, output)
-                logging.info("Regenerated %s (%d lessons)", output, n)
-            except Exception as e:
-                logging.exception("Failed to regenerate lessons: %s", e)
+            # Only regenerate on .md changes
+            if not event.src_path.endswith((".md", ".markdown")):
+                return
 
-    event_handler = _Handler(patterns=patterns, ignore_patterns=ignore_patterns,
-                             ignore_directories=ignore_directories, case_sensitive=case_sensitive)
+            now = time.time()
+            if now - self.last_run < self.debounce_interval:
+                return  # debounce: ignore rapid duplicate events
+
+            self.last_run = now
+
+            logging.info("Detected change in %s — regenerating...", event.src_path)
+            try:
+                generate(lessons_dir, output)
+            except Exception:
+                logging.exception("Regeneration failed!")
+
+    event_handler = Handler()
     observer = Observer()
-    observer.schedule(event_handler, path=lessons_dir, recursive=True)
+    observer.schedule(event_handler, str(lessons_dir), recursive=True)
     observer.start()
-    logging.info("Watching '%s' for changes. Press Ctrl+C to stop.", lessons_dir)
+
+    logging.info("Watching '%s' for changes... Press Ctrl+C to stop.", lessons_dir)
+
     try:
         while True:
             time.sleep(1)
     except KeyboardInterrupt:
         logging.info("Stopping watcher...")
+    finally:
         observer.stop()
-    observer.join()
+        observer.join()
 
+
+# ==========================================================
+# CLI entry point
+# ==========================================================
 
 def main(argv=None):
-    parser = argparse.ArgumentParser()
-    parser.add_argument("--lessons-dir", default="lessons", help="Directory containing lesson .md files (default: lessons)")
-    parser.add_argument("--output", default="generated_lessons.json", help="Output JSON file (default: generated_lessons.json)")
-    parser.add_argument("--watch", action="store_true", help="Run in watch mode and regenerate on file changes (requires watchdog)")
-    parser.add_argument("--log", default="info", help="Logging level (debug, info, warning, error)")
-    args = parser.parse_args()
+    parser = argparse.ArgumentParser(description="Generate lessons JSON from .md files.")
+    parser.add_argument("--lessons-dir", default="lessons",
+                        help="Directory containing markdown lessons (default: lessons)")
+    parser.add_argument("--output", default="generated_lessons.json",
+                        help="JSON file to generate (default: generated_lessons.json)")
+    parser.add_argument("--watch", action="store_true",
+                        help="Watch mode — regenerate on file changes (requires watchdog)")
+    parser.add_argument("--log", default="info",
+                        help="Logging level: debug/info/warning/error (default: info)")
 
-    logging.basicConfig(level=logging.INFO)
-    generate(args.lessons_dir, args.output)
+    args = parser.parse_args(argv)
 
+    # Configure logging
+    logging.basicConfig(level=args.log.upper(), format="%(levelname)s: %(message)s")
+
+    lessons_dir = Path(args.lessons_dir)
+    output = Path(args.output)
+
+    # Initial generation
     try:
-        n = generate(args.lessons_dir, args.output)
+        count = generate(lessons_dir, output)
+        logging.info("Initial generation complete (%d lessons).", count)
     except Exception:
-        logging.exception("Initial generation failed")
+        logging.exception("Initial generation failed.")
         sys.exit(1)
 
+    # Watch mode
     if args.watch:
-        watch_mode(args.lessons_dir, args.output)
+        watch_mode(lessons_dir, output)
 
 
 if __name__ == "__main__":
