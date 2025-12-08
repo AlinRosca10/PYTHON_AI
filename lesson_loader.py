@@ -40,3 +40,32 @@ def load_lessons_json(path="generated_lessons.json"):
         return {}
     with open(path, "r", encoding="utf8") as f:
         return json.load(f)
+    
+def load_lessons_live(lessondir="lessons"):
+    lessons = {}
+    if not os.path.isdir(lessondir):
+        return lessons
+
+    for filename in sorted(os.listdir(lessondir)):
+        if not filename.endswith(".md"):
+            continue
+
+        slug = filename[:-3]
+        path = os.path.join(lessondir, filename)
+
+        with open(path, "r", encoding="utf8") as f:
+            content = f.read().lstrip("\ufeff")
+
+        lines = content.splitlines()
+        if lines and lines[0].startswith("# "):
+            title = lines[0][2:].strip()
+        else:
+            title = slug.replace("-", " ").title()
+
+        lessons[slug] = {
+            "title": title,
+            "md": content,
+            "path": path,
+        }
+
+    return lessons

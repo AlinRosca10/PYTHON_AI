@@ -4,7 +4,10 @@ from flask import Flask, render_template_string, abort, url_for
 import markdown2
 import json
 
-from lesson_loader import load_lessons_json
+from lesson_loader import load_lessons_live
+
+def get_lessons():
+    return load_lessons_live("lessons")
 
 app = Flask(__name__)
 
@@ -89,7 +92,7 @@ BASE_TEMPLATE = """
 
 @app.route('/')
 def index():
-    LESSONS = load_lessons_dynamic()
+    LESSONS = get_lessons()
     items = [(slug, data['title']) for slug, data in LESSONS.items()]
     items.sort()
     list_html = ['<div class="lesson-list">']
@@ -102,7 +105,7 @@ def index():
 
 @app.route('/lesson/<slug>')
 def lesson(slug):
-    LESSONS = load_lessons_dynamic()
+    LESSONS = get_lessons()
     data = LESSONS.get(slug)
     if not data:
         abort(404)

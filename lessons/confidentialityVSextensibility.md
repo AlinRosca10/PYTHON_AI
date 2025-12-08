@@ -1,10 +1,10 @@
-# Confidențialitatea vs. Extensibilitatea
+# ⚔️  Confidențialitatea vs. Extensibilitatea
 
 
 
 Iată o analiză clară și structurată a raportului dintre confidențialitate și extensibilitate într-un sistem tehnic, organizațional sau software.
 
-## 🔐 Confidențialitatea vs. Extensibilitatea
+## 🔐 Confidențialitatea vs. ➕ Extensibilitatea
 
 Confidențialitatea și extensibilitatea (capacitatea unui sistem de a fi ușor extins, adaptat, conectat la noi module sau funcționalități) se află adesea într-un raport tensionat, similar altor “trileme” din arhitectură și interoperabilitate.
 

@@ -1,4 +1,4 @@
-# Confidențialitatea în relație cu scalabilitatea
+# ⚖️ Confidențialitatea în relație cu scalabilitatea
 
 
 
