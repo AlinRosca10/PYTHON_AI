@@ -1,8 +1,14 @@
 import os
 import time
-from flask import Flask, render_template_string, abort, url_for
+import threading
+from flask import Response, stream_with_context, Flask, render_template_string, abort, url_for
 import markdown2
 import json
+
+# Adaugare monitor global
+LESSONS_DIR = "lessons"
+_last_mtime = 0
+_reload_flag = False
 
 from lesson_loader import load_lessons_live
 
@@ -10,6 +16,27 @@ def get_lessons():
     return load_lessons_live("lessons")
 
 app = Flask(__name__)
+
+def watch_lessons_folder():
+    global _last_mtime, _reload_flag
+
+    while True:
+        latest = 0
+        for root, dirs, files in os.walk(LESSONS_DIR):
+            for f in files:
+                if f.endswith(".md"):
+                    path = os.path.join(root, f)
+                    m = os.path.getmtime(path)
+                    if m > latest:
+                        latest = m
+
+        if latest > _last_mtime:
+            _reload_flag = True
+            _last_mtime = latest
+
+        time.sleep(0.5)
+
+threading.Thread(target=watch_lessons_folder, daemon=True).start()
 
 # Încarcă lecțiile generate din JSON 
 # Reîncărcare automată făra restart în Flask
@@ -38,7 +65,7 @@ def load_lessons_dynamic(path="generated_lessons.json"):
     return LESSONS
 
 BASE_TEMPLATE = """
-<!Doctype html>
+<!DOCTYPE html>
 <html lang="ro">
 <head>
   <meta charset="utf-8">
@@ -67,10 +94,10 @@ BASE_TEMPLATE = """
 <body>
   <div class="container">
     <header>
-      <div class="logo">C</div>
+      <div class="logo">CALM</div>
       <div>
-        <h1>Calm-style Lessons</h1>
-        <div class="meta">Lecții scurte. Clar. Calm.</div>
+        <h1>Calm-Style Lessons</h1>
+        <div class="meta">Lecții scurte. Clar. Calm. Coerent. Corelat. Relaxat. Degajat</div>
       </div>
       <nav style="margin-left:auto">
         <a href="{{ url_for('index') }}">Home</a>
@@ -83,9 +110,20 @@ BASE_TEMPLATE = """
     </main>
 
     <footer>
-      © Exemple — stil inspirat de calmcode.io
+      <p>© 2025 — stil inspirat de 
+        <a href="https://calmcode.io" target="_blank">calmcode.io</a>
+      </p>
     </footer>
   </div>
+  <script>
+const evtSource = new EventSource("/livereload");
+evtSource.onmessage = function(e) {
+    if (e.data === "reload") {
+        console.log("🔄 Live reload triggered");
+        location.reload();
+    }
+};
+</script>
 </body>
 </html>
 """
@@ -118,6 +156,20 @@ def lesson(slug):
         <p><a href="{url_for('index')}" class="button">Înapoi</a></p>
     </article>"""
     return render_template_string(BASE_TEMPLATE, title=data["title"], content=content)
+
+@app.route("/livereload")
+def livereload():
+    @stream_with_context
+    def event_stream():
+        global _reload_flag
+        while True:
+            if _reload_flag:
+                _reload_flag = False
+                yield "data: reload\n\n"
+            else:
+                yield "data: ping\n\n"
+            time.sleep(1)
+    return Response(event_stream(), mimetype="text/event-stream")
 
 @app.route('/about')
 def about():
