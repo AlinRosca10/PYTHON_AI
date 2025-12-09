@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>Lecții</h2>
+
+<div class="lesson-list">
+  {% for slug, title in lessons %}
+    <a class="lesson-item" href="{{ url_for('lesson', slug=slug) }}">
+      <strong>{{ title }}</strong>
+    </a>
+  {% endfor %}
+</div>
+{% endblock %}

@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+{% block content %}
+<article>
+    <h2>{{ title }}</h2>
+    <div class="meta">Lecție scurtă</div>
+    <div>{{ html|safe }}</div>
+
+    <p><a href="{{ url_for('index') }}" class="button">Înapoi</a></p>
+</article>
+{% endblock %}
