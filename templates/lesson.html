@@ -8,7 +8,11 @@
 <article>
     <h2>{{ title }}</h2>
     <div class="meta aurora-input">Lecție scurtă
+        <h3>Rezumatul lecției generat de aplicatie:</h3>
         <p>{{ summary }}</p>
+        <hr class="aurora-input">
+        <h3>Rezumatul lecției generat de AI:</h3>
+        <p>{{ summary_ai }}</p>
     </div>
     <div>{{ html|safe }}</div>
 

@@ -11,6 +11,7 @@ _last_mtime = 0
 _reload_flag = False
 
 from lesson_loader import load_lessons_live, generate_summary
+from ai_utils import generate_summary_ai
 
 def get_lessons():
     return load_lessons_live("lessons")
@@ -86,10 +87,12 @@ def lesson(slug):
         abort(404)
     html = markdown2.markdown(data['md'], extras=["fenced-code-blocks", "tables"])
     summary = generate_summary(data['text'])
+    summary_ai = generate_summary_ai(data['text'])
     return render_template(
         "lesson.html", 
         title=data["title"],
         summary=summary,
+        summary_ai=summary_ai,
         html=html)
 
 @app.route("/livereload")

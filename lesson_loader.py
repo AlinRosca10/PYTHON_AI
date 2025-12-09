@@ -87,8 +87,10 @@ def load_lessons_live(lessondir="lessons"):
 
     return lessons
 
-def generate_summary(text, max_len=300):
-    clean = text.replace("\n", " ").strip()
-    if len(clean) > max_len:
-        return clean[:max_len].rsplit(" ", 1)[0] + "..."
-    return clean
+def generate_summary(text, max_len=200):
+    sentences = text.split(". ")
+    first = sentences[0].strip()
+    if len(first) > max_len:
+        return first[:max_len] + "..."
+    return first + "."
+
