@@ -95,7 +95,8 @@ def lesson(slug):
     return render_template(
         "lesson.html", 
         title=data["title"], 
-        content=content)
+        content=content,
+        html=html)
 
 @app.route("/livereload")
 def livereload():
@@ -114,33 +115,33 @@ def livereload():
 @app.route('/about')
 def about():
     return render_template(
-        "about.html",
+        "pages/about.html",
         title="Despre"
     )
 @app.route('/blog')
 def blog():
     return render_template(
-        "blog.html",
+        "pages/blog.html",
         title="Blog"
     )
 @app.route('/faq')
 def faq():
     return render_template(
-        "faq.html",
+        "pages/faq.html",
         title="FAQ"
     )
 
 @app.route('/contact')
 def contact():
     return render_template(
-        "contact.html",
+        "pages/contact.html",
         title="Contact"
     )
 
 @app.route('/services')
 def services():
     return render_template(
-        "services.html",
+        "pages/services.html",
         title="Servicii"
     )
 

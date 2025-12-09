@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en" style="
+--g1: #00076f; 
+--g2: #44008b;
+--g3: #9f45b0;
+--g4: #e54ed0;
+">
+<head>
+  <meta charset="UTF-8">
+  <title>Solar System Form</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+    }
+    iframe {
+      width: 100%;
+      height: 100vh;
+      border: none;
+    }
+  </style>
+  <link rel="stylesheet" type="text/css" href="style.css">
+  <base href="Pictures_solar_system/">
+  <link rel="icon" href="Icon_system_solar/icon_system_solar.png" type="image/png">
+  <script src="https://unpkg.com/image-map-resizer@1.0.10/js/imageMapResizer.min.js">
+  </script>
+</head>
+<body id="main-body">
+
+  <header class="aurora-input">
+    <h1>Explore the SOLAR SYSTEM with NASA Eyes</h1>
+  </header>
+
+  <nav class="planet-nav" data-visible-level="0">
+    <a href="../map_project.html" class="aurora-button">Solar System</a>
+    <a href="../sun.html" class="aurora-button">Sun</a>
+    <a href="../mercury.html" class="aurora-button">Mercury</a>
+    <a href="../venus.html" class="aurora-button">Venus</a>
+    <a href="../earth.html" class="aurora-button">Earth</a>
+    <a href="../mars.html" class="aurora-button">Mars</a>
+    <a href="../jupiter.html" class="aurora-button">Jupiter</a>
+    <a href="../saturn.html" class="aurora-button">Saturn</a>
+    <a href="../uranus.html" class="aurora-button">Uranus</a>
+    <a href="../neptune.html" class="aurora-button">Neptune</a>
+    <a href="../pluto.html" class="aurora-button">Pluto</a>
+  </nav>
+
+  <aside class="sidebar" data-visible-level="1"> 
+    <iframe 
+    src="https://eyes.nasa.gov/apps/solar-system/#/"
+    allowfullscreen
+    id="nasaIframe"
+    >NASA no longer approves viewing in this format...</iframe>
+    <button onclick="loadPlanet('')" class="aurora-button">Solar System</button>
+    <button onclick="loadPlanet('sun')" class="aurora-button">Sun</button>
+    <button onclick="loadPlanet('mercury')" class="aurora-button">Mercury</button>
+    <button onclick="loadPlanet('venus')" class="aurora-button">Venus</button>
+    <button onclick="loadPlanet('earth')" class="aurora-button">Earth</button>
+    <button onclick="loadPlanet('mars')" class="aurora-button">Mars</button>
+    <button onclick="loadPlanet('jupiter')" class="aurora-button">Jupiter</button>
+    <button onclick="loadPlanet('saturn')" class="aurora-button">Saturn</button>
+    <button onclick="loadPlanet('uranus')" class="aurora-button">Uranus</button>
+    <button onclick="loadPlanet('neptune')" class="aurora-button">Neptun</button>
+    <button onclick="loadPlanet('134340_pluto')" class="aurora-button">Pluto</button>
+  </aside>
+
+  <hr class="aurora-label">
+
+  <section>
+    <article class="image-text-row" data-visible-level="2">
+      <section>
+        <img src="form_system.jpg" alt="Diagram of early Solar System's protoplanetary disk where Earth and other bodies began forming" style="width: 900px">
+      </section>
+      <section class="image-side-content">
+        <h2>
+          The Formation of the Solar System
+        </h2>
+        <p>
+          The Solar System formed at least 4.568 billion years ago from the gravitational collapse of a region within a large molecular cloud. This initial cloud was likely several light-years across and probably birthed several stars. The cloud collapsed, possibly due to the shockwave of a nearby exploding star, called a supernova. When this dust cloud collapsed, it formed a solar nebula – a spinning, swirling disk of material.
+        </p>
+        <p>
+          As is typical of molecular clouds, this one consisted mostly of hydrogen, with some helium, and small amounts of heavier elements fused by previous generations of stars. As the pre-solar nebula collapsed, conservation of angular momentum caused it to rotate faster.
+        </p>
+      </section>
+    </article>
+
+    <article class="image-text-row" data-visible-level="3">
+      <section class="image-side-content">
+        <h2>About the Solar System</h2>
+        <p>
+          It is a collection of celestial bodies—including a star (the Sun), planets, moons, asteroids, comets, and other objects—that are bound together by gravity. Our solar system includes the Sun, eight planets, five officially named dwarf planets, hundreds of moons, and thousands of asteroids and comets. At the center, gravity pulled more and more material in. Eventually, the pressure in the core was so great that hydrogen atoms began to combine and form helium, releasing a tremendous amount of energy.
+        </p>
+        <p>
+         Our solar system is located in the Milky Way, a barred spiral galaxy with two major arms, and two minor arms. Our Sun is in a small, partial arm of the Milky Way called the Orion Arm, or Orion Spur, between the Sagittarius and Perseus arms. Our solar system orbits the center of the galaxy at about 515,000 mph (828,000 kph). It takes about 230 million years to complete one orbit around the galactic center.
+       </p>
+     </section>
+     <section>
+      <img src="solar_system.png" alt="The structure of the solar system in order of increasing distance" usemap="#system-solar-map" style="width: 900px">
+      <map name="system-solar-map">
+        <area shape="circle" coords="315, 220, 75" alt="Sun" href="../sun.html">
+        <area shape="circle" coords="160, 285, 20" alt="Mercury"href="../mercury.html">
+        <area shape="circle" coords="525, 190, 25" alt="Venus" href="../venus.html">
+        <area shape="circle" coords="204, 365, 30" alt="Earth" href="../earth.html"> 
+        <area shape="circle" coords="562, 102, 20" alt="Mars" href="../mars.html">
+        <area shape="circle" coords="503, 390, 52" alt="Jupiter"href="../jupiter.html">
+        <area shape="circle" coords="88, 224, 40" alt="Saturn"href="../saturn.html">
+        <area shape="circle" coords="234, 153, 20" alt="Uranus"href="../uranus.html">
+        <area shape="circle" coords="459, 70, 20" alt="Neptun"href="../neptun.html">
+        <area shape="circle" coords="357, 92, 10" alt="Pluto"href="../pluto.html">
+      </map>
+    </section>
+  </article>
+
+  <article class="image-text-row" data-visible-level="4">
+    <section>
+      <img src="inner_solar.png" alt="Overview of the inner Solar System up to Jupiter's orbit" style="width: 900px">
+    </section>
+    <section class="image-side-content">
+      <h2>Characteristics</h2>
+      <p>
+       The order and arrangement of the planets and other bodies in our solar system is due to the way the solar system formed. Nearest to the Sun, only rocky material could withstand the heat when the solar system was young. For this reason, the first four planets – Mercury, Venus, Earth, and Mars – are terrestrial planets. They are all small with solid, rocky surfaces.
+     </p>
+     <p>
+      Meanwhile, materials we are used to seeing as ice, liquid, or gas settled in the outer regions of the young solar system. Gravity pulled these materials together, and that is where we find gas giants Jupiter and Saturn, and the ice giants Uranus and Neptune.
+    </p>
+    <p>
+      Dwarf Planets are classified objects like Pluto, Eris, and others reside in the outer regions of the solar system. Moons are Hundreds of moons orbit planets and dwarf planets, with Jupiter and Saturn having the largest number. Asteroid Belt is located between Mars and Jupiter, it's a region populated by numerous rocky asteroids. Kuiper Belt is a region beyond Neptune containing icy bodies, including dwarf planets.
+    </p>
+  </section>
+</article>
+
+</section>
+
+<footer class="system-footer">
+  <p>
+    Copyright © N.A.S.A. (National Aeronautics and Space Administration)
+  </p>
+  <p>
+    Created by Alin Rosca © 2025
+  </p>
+</footer>
+
+<script>
+  function loadPlanet(planet) {
+    const iframe = document.getElementById("nasaIframe");
+    iframe.src = `https://eyes.nasa.gov/apps/solar-system/#/${planet}?embed=true`;
+  }
+
+  window.addEventListener('DOMContentLoaded', () => {
+    imageMapResize();
+
+    const level = Number(localStorage.getItem('securityLevel'));
+    const visibleElements = document.querySelectorAll('[data-visible-level]');
+
+    
+    visibleElements.forEach(el => {
+
+      const visibleLevel = Number(el.getAttribute('data-visible-level'));
+      const displayType = el.classList.contains('image-text-row') ? 'flex' : 'block';
+      if (visibleLevel <= 1 && level <= 1){
+        el.style.display = visibleLevel >= level ? '' : 'none';
+      }
+      else if (visibleLevel >= level) {
+        el.style.display = displayType;
+      } else {
+        el.style.display = 'none';
+      }
+    });
+  });
+</script>
+
+</body>
+</html>

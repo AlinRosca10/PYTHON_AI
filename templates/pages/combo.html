@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en" style="
+--g1: #ff0000;
+--g2: #f99400;
+--g3: #fec300;
+--g4: #f9f160;
+">
+<head>
+	<meta charset="UTF-8">
+	<title>Combo Box</title>
+	<style>
+		#showSecurity {
+			margin-top: 20px;
+			padding: 10px;
+			border: 1px solid #000000;
+			width: 200px;
+			background-color: #ffffff;
+		}
+
+		body {
+			margin: 0;
+			padding: 0;
+		}
+
+		iframe {
+			width: 100%;
+			height: 100vh;
+			border: none;
+		}
+	</style>
+	<base href="Solar_system/">
+	<link rel="stylesheet" type="text/css" href="style.css">
+	<link rel="icon" href="Pictures_solar_system/Icon_system_solar/icon_system_security.png" type="image/png">
+	<script src="https://unpkg.com/image-map-resizer@1.0.10/js/imageMapResizer.min.js">
+	</script>
+</head>
+<body>
+	<header class="aurora-label" style="margin: 10px;">
+		<h1>Accessing SOLAR SYSTEM Information</h1>
+	</header>
+	<aside class="sidebar">
+		<form class="form-group" style="flex-direction: column-reverse;">
+			<fieldset class="aurora-label">Personal Info
+				<legend class="aurora-input">
+					<label for="lastName" class="aurora-label">Last name: </label>
+					<input type="text" name="lastName" class="aurora-input" placeholder="enter your last name...">
+
+					<label for="firstName" class="aurora-label">First name: </label>
+					<input type="text" name="firstName" class="aurora-input" placeholder="enter your first name...">
+
+					<label for="emailSecurity" class="aurora-label">Email: </label>
+					<input type="email" name="emailSecurity" class="aurora-input" placeholder="enter your email...">
+
+					<label for="phoneNumber" class="aurora-label">Phone number: </label>
+					<input type="tel" name="phoneNumber" class="aurora-input" placeholder="enter your phone number...">
+				</legend>
+			</fieldset>
+			<fieldset class="aurora-label">Access Account
+				<legend class="aurora-input">
+					<label for="username" class="aurora-label">Username: </label>
+					<input id="username" type="text" name="username" class="aurora-input"  placeholder="enter your username...">
+
+					<label for="password" class="aurora-label">Password: </label>
+					<input id="password" type="password" name="password" class="aurora-input"  placeholder="enter your password...">
+
+					<label for="securityLevel" class="aurora-label">Choose the security level: </label>
+					<select id="securityLevel" class="aurora-select">
+						<option value="">-- Select security level --</option>
+						<option value="0">Top Secret</option>
+						<option value="1">Secret</option>
+						<option value="2">Confidential</option>
+						<option value="3">Restricted</option>
+						<option value="4">Public</option>
+					</select>
+					<button id="loginSecurity" class="aurora-button" type="button" onclick="window.location.href='map_project.html'" style="text-align: right;" disabled>login</button>
+				</legend>
+			</fieldset>
+			<fieldset class="aurora-label">Priority
+				<legend class="aurora-input">
+					<div id="showSecurity" class="aurora-input">The selected security level will appear here...</div>
+					<img id="iconSecurity" src="Pictures_solar_system/Icon_system_solar/combo.png" alt="Security Level Icon" style="width: 150px;">
+				</legend>
+			</fieldset>
+		</form>
+	</aside>
+	<footer class="system-footer">
+		<p>
+			Copyright © N.A.S.A. (National Aeronautics and Space Administration)
+		</p>
+		<p>
+			Created by Alin Rosca © 2025
+		</p>
+	</footer>
+	<script>
+		const comboBox = document.getElementById('securityLevel');
+		const divshowSecurity = document.getElementById('showSecurity');
+		const icon = document.getElementById('iconSecurity');
+		const usernameInput = document.getElementById('username');
+		const passwordInput = document.getElementById('password');
+		const loginButton = document.getElementById('loginSecurity');
+
+		function updateSecurityDisplay() {
+			let color = "white"
+			let gradient = "white";
+
+			switch(comboBox.value) {
+			case "0": color = "darkred";
+				gradient = "linear-gradient(135deg, #fe2712, #ea2113, #d51a13, #c11414)";
+				icon.src = "Pictures_solar_system/Icon_system_solar/top_secret_level_icon.png";
+				break;
+			case "1": color = "darkorange";
+				gradient = "linear-gradient(135deg, #fe7309, #ec3114, #d0210d, #b40602)";
+				icon.src = "Pictures_solar_system/Icon_system_solar/secret_level_icon.png";
+				break;
+			case "2": color = "gold";
+				gradient = "linear-gradient(135deg, #7b5e28, #977433, #b38d48, #d4a65d)";
+				icon.src = "Pictures_solar_system/Icon_system_solar/confidential_level_icon.png";
+				break;
+			case "3": color = "blue";
+				gradient = "linear-gradient(135deg, #6cb1ff, #4482ff, #205bff, #0e34f6)";
+				icon.src = "Pictures_solar_system/Icon_system_solar/restricted_level_icon.png";
+				break;
+			case "4": color = "green";
+				gradient = "linear-gradient(135deg, #b3ff00, #80ff00, #5bf700, #2de200)";
+				icon.src = "Pictures_solar_system/Icon_system_solar/public_level_icon.png";
+				break;
+			}
+
+			if(comboBox.value === "") {
+				divshowSecurity.textContent = "No security level selected! Please select the security level."
+				divshowSecurity.style.color = "black";
+				divshowSecurity.style.borderColor = "black";
+				divshowSecurity.style.background = "transparent";
+			} else {
+				divshowSecurity.textContent = "The selected security level: " + comboBox.value + " (" + comboBox.options[comboBox.selectedIndex].text + ")";
+				divshowSecurity.style.color = color;
+				divshowSecurity.style.borderColor = color;
+				divshowSecurity.style.background = gradient;
+			}
+		}
+
+		function validateLogin() {
+			updateSecurityDisplay();
+			loginButton.disabled = !(usernameInput.value.trim() && passwordInput.value.trim() && comboBox.value);
+		}
+
+		usernameInput.addEventListener('input', validateLogin);
+		passwordInput.addEventListener('input', validateLogin);
+		comboBox.addEventListener('change', validateLogin);
+		loginButton.addEventListener('click', () => {
+			localStorage.setItem('securityLevel', comboBox.value);
+			window.location.href = 'map_project.html';
+		});
+	</script>
+</body>
+</html>
