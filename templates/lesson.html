@@ -1,8 +1,17 @@
 {% extends "base.html" %}
+
+{% block icon %}
+<link rel="icon" type="image/png" href="{{ url_for('static', filename='icons/lesson.png') }}">
+{% endblock %}
+
 {% block content %}
 <article>
     <h2>{{ title }}</h2>
-    <div class="meta aurora-input">Lecție scurtă</div>
+    <div class="meta aurora-input">Lecție scurtă
+        <p>
+            # rezumat automat
+        </p>
+    </div>
     <div>{{ html|safe }}</div>
 
     <p><a href="{{ url_for('index') }}" class="aurora-button">Înapoi</a></p>

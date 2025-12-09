@@ -9,7 +9,10 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <title>{{ title }}</title>
-  <link rel="icon" type="image/png" href="{{ url_for('static', filename='icons/blog.png')}}">
+
+  {% block icon %}
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='icons/default.png') }}">
+  {% endblock %}
 
   <style>
     :root {
@@ -123,7 +126,7 @@
       <div class="logo aurora-input">CALM</div>
       <div>
         <h1>Calm-Style Lessons</h1>
-        <div class="meta">Lecții scurte. Clar. Calm. Coerent. Corelat. Relaxat. Degajat</div>
+        <div class="meta">Lecții scurte. Programează. Clar. Calm. Coerent. Corelat. Relaxat. Degajat</div>
       </div>
       <nav class="aurora-nav aurora-input" style="margin-left:auto">
         <a href="{{ url_for('index') }}" class="aurora-button">Home</a>

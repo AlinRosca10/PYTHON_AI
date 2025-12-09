@@ -19,11 +19,11 @@
 
 - ➡️ **Scalare orizontală** – adăugarea de noi servere în paralel
 
-## 🔹 Interoperabilitate
+## 🔹 Interoperabilitate 
 
 Interoperabilitatea este abilitatea a două sau mai multe sisteme, aplicații sau componente de a comunica, colabora și schimba date între ele fără probleme, chiar dacă au fost create de producători diferiți.
 
-### Exemple:
+### Exemple: 
 
 - 📄 Un fișier PDF deschis atât în Adobe Acrobat, cât și în browser.
 
@@ -31,7 +31,7 @@ Interoperabilitatea este abilitatea a două sau mai multe sisteme, aplicații sa
 
 - 📡 Dispozitive IoT de la producători diferiți care comunică prin protocolul MQTT.
 
-# Tipuri:
+# Tipuri: 
 
 - 🔧 **Interoperabilitate tehnică** – compatibilitate la nivel de protocoale și formate de date.
 
@@ -39,7 +39,7 @@ Interoperabilitatea este abilitatea a două sau mai multe sisteme, aplicații sa
 
 - 📋 **Interoperabilitate organizațională** – procese și politici compatibile.
 
-Dacă vrei, pot să-ți dau:
-✅ exemple mai detaliate
-✅ comparații între cele două concepte
-✅ explicații pentru un proiect sau un context specific (blockchain, AI, software, rețele etc.)
+#### Dacă vrei, pot să-ți dau: 
+- ✅ exemple mai detaliate
+- ✅ comparații între cele două concepte
+- ✅ explicații pentru un proiect sau un context specific (blockchain, AI, software, rețele etc.)

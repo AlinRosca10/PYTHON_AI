@@ -1,4 +1,9 @@
 {% extends "base.html" %}
+
+{% block icon %}
+<link rel="icon" type="image/png" href="{{ url_for('static', filename='icons/services.png') }}">
+{% endblock %}
+
 {% block content %}
 <h2>Servicii</h2>
 <p>Site minimal pentru lecții scurte, inspirat de calmcode.io.</p>
