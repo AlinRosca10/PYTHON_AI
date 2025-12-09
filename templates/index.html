@@ -4,7 +4,7 @@
 
 <div class="lesson-list">
   {% for slug, title in lessons %}
-    <a class="lesson-item" href="{{ url_for('lesson', slug=slug) }}">
+    <a class="lesson-item aurora-button" href="{{ url_for('lesson', slug=slug) }}">
       <strong>{{ title }}</strong>
     </a>
   {% endfor %}

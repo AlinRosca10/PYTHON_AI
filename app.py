@@ -116,7 +116,7 @@ def livereload():
 def about():
     return render_template(
         "pages/about.html",
-        title="Despre"
+        title="About"
     )
 @app.route('/blog')
 def blog():
@@ -142,7 +142,7 @@ def contact():
 def services():
     return render_template(
         "pages/services.html",
-        title="Servicii"
+        title="Services"
     )
 
 if __name__ == '__main__':

@@ -2,9 +2,9 @@
 {% block content %}
 <article>
     <h2>{{ title }}</h2>
-    <div class="meta">Lecție scurtă</div>
+    <div class="meta aurora-input">Lecție scurtă</div>
     <div>{{ html|safe }}</div>
 
-    <p><a href="{{ url_for('index') }}" class="aurora-button button">Înapoi</a></p>
+    <p><a href="{{ url_for('index') }}" class="aurora-button">Înapoi</a></p>
 </article>
 {% endblock %}
