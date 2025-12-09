@@ -1,5 +1,17 @@
 import os
 import json
+import re
+
+def md_to_text(md):
+    # elimină titlurile markdown
+    text = re.sub(r'#.*', '', md)
+    # elimină bold, italic etc.
+    text = re.sub(r'[*_`]', '', text)
+    # elimină linkuri [text](url)
+    text = re.sub(r'\[([^\]]+)\]\([^)]+\)', r'\1', text)
+    # elimina spații multiple
+    text = re.sub(r'\s+', ' ', text)
+    return text.strip()
 
 def load_lessons_from_md(lessondir="lessons"):
     lessons = {}
@@ -30,7 +42,11 @@ def load_lessons_from_md(lessondir="lessons"):
             else:
                 title = slug.replace("-", " ").title()
 
-        lessons[slug] = {"title": title, "md": content}
+        lessons[slug] = {"title": title, 
+                         "md": content,
+                         "text": md_to_text(content),
+                         "path": path
+                         }
 
     return lessons
 
@@ -65,7 +81,14 @@ def load_lessons_live(lessondir="lessons"):
         lessons[slug] = {
             "title": title,
             "md": content,
+            "text": md_to_text(content),
             "path": path,
         }
 
     return lessons
+
+def generate_summary(text, max_len=300):
+    clean = text.replace("\n", " ").strip()
+    if len(clean) > max_len:
+        return clean[:max_len].rsplit(" ", 1)[0] + "..."
+    return clean

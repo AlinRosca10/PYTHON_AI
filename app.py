@@ -10,7 +10,7 @@ LESSONS_DIR = "lessons"
 _last_mtime = 0
 _reload_flag = False
 
-from lesson_loader import load_lessons_live
+from lesson_loader import load_lessons_live, generate_summary
 
 def get_lessons():
     return load_lessons_live("lessons")
@@ -85,17 +85,11 @@ def lesson(slug):
     if not data:
         abort(404)
     html = markdown2.markdown(data['md'], extras=["fenced-code-blocks", "tables"])
-    content = f"""
-    <article>
-        <h2>{data['title']}</h2>
-        <div class="meta">Lecție scurtă</div>
-        <div>{html}</div>
-        <p><a href="{url_for('index')}" class="button">Înapoi</a></p>
-    </article>"""
+    summary = generate_summary(data['text'])
     return render_template(
         "lesson.html", 
-        title=data["title"], 
-        content=content,
+        title=data["title"],
+        summary=summary,
         html=html)
 
 @app.route("/livereload")
