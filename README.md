@@ -6,7 +6,7 @@
 [![Profil GitHub Alin Roșca](https://img.shields.io/badge/byAlinRoșca-Active-success)](https://github.com/AlinRosca10/PYTHON_AI.git)
 
 > Documentație optimizată pentru afișare pe GitHub.
-> Pentru a vizualiza ingral conținutul și desfașurarea proiectului Trilema Interoperabilității, vă rugăm să accesați https://github.com/AlinRosca10/PYTHON_AI.git și avețti acces la fiecare branch și commit aferent fiecărei etape în parte.
+> Pentru a vizualiza ingral conținutul și desfașurarea proiectului Trilema Interoperabilității, vă rugăm să accesați https://github.com/AlinRosca10/PYTHON_AI.git și aveți acces la fiecare branch și commit aferent fiecărei etape în parte.
 
 Acest proiect conține exemple de cod, exerciții și funcționalități dezvoltate în PYTHON.
 
