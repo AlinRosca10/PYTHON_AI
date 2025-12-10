@@ -3,8 +3,10 @@
 ![PYTHON Version](https://img.shields.io/badge/PYTHON-3.13.9-blue)
 ![License](https://img.shields.io/badge/License-MIT-green)
 ![Status](https://img.shields.io/badge/Status-Active-success)
+![by Alin Roșca](https://github.com/AlinRosca10/PYTHON_AI.git)
 
 > Documentație optimizată pentru afișare pe GitHub.
+> Pentru a vizualiza ingral conținutul și desfașurarea proiectului Trilema Interoperabilității, vă rugăm să accesați https://github.com/AlinRosca10/PYTHON_AI.git și avețti acces la fiecare branch și commit aferent fiecărei etape în parte.
 
 Acest proiect conține exemple de cod, exerciții și funcționalități dezvoltate în PYTHON.
 
