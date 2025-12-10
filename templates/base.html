@@ -196,6 +196,7 @@
             localStorage.setItem("theme", "light");
         }
     });
+
     // auto-detect system dark mode if first visit
     if (!localStorage.getItem("theme")) {
         if (window.matchMedia("(prefers-color-scheme: dark)").matches) {
@@ -203,6 +204,41 @@
             localStorage.setItem("theme", "dark");
         }
     }
+
+    /*
+        Dark Mode logic:
+        - Dacă userul a selectat deja (localStorage), folosim preferința lui.
+        - Dacă nu, atunci se activează automat între 18:00–06:00.
+    */
+
+    const saved = localStorage.getItem("theme");
+
+    function applyTheme(theme) {
+        if (theme === "dark") {
+            document.body.classList.add("dark");
+        } else {
+            document.body.classList.remove("dark");
+        }
+    }
+
+    if (saved) {
+        // User preference has priority
+        applyTheme(saved);
+    } else {
+        // AUTO mode based on hour
+        const hour = new Date().getHours();
+
+        // 18:00 → 23:59 OR 00:00 → 06:00
+        const isNight = (hour >= 18 || hour < 6);
+
+        applyTheme(isNight ? "dark" : "light");
+    }
+
+    // Toggle button logic
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        const isDark = document.body.classList.toggle("dark");
+        localStorage.setItem("theme", isDark ? "dark" : "light");
+    });
 </script>
 </body>
 </html>

@@ -2,6 +2,7 @@ import os
 import json
 import re
 
+
 def md_to_text(md):
     # elimină titlurile markdown
     text = re.sub(r'#.*', '', md)
@@ -12,6 +13,7 @@ def md_to_text(md):
     # elimina spații multiple
     text = re.sub(r'\s+', ' ', text)
     return text.strip()
+
 
 def load_lessons_from_md(lessondir="lessons"):
     lessons = {}
@@ -57,6 +59,7 @@ def load_lessons_json(path="generated_lessons.json"):
     with open(path, "r", encoding="utf8") as f:
         return json.load(f)
     
+    
 def load_lessons_live(lessondir="lessons"):
     lessons = {}
     if not os.path.isdir(lessondir):
@@ -86,6 +89,7 @@ def load_lessons_live(lessondir="lessons"):
         }
 
     return lessons
+
 
 def generate_summary(text, max_len=200):
     sentences = text.split(". ")

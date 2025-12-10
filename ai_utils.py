@@ -4,6 +4,7 @@ import os
 
 client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
+
 def generate_summary_ai(text: str, max_len=120):
     """
     Generează un rezumat scurt, calm, în stil calmcode.
