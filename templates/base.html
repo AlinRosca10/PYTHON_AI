@@ -190,9 +190,19 @@
         }
     };
 
-    function setEmoji(isDark) {
-        const btn = document.getElementById("theme-toggle");
-        btn.textContent = isDark ? "🌙" : "✨";
+    const emojiBtn = document.getElementById("theme-toggle");
+
+    function animateEmoji(isDark) {
+        let frames = isDark
+            ? ["🌓", "🌘", "🌙"]   // Light → Dark
+            : ["🌙", "🌒", "✨"];   // Dark → Light
+
+        let i = 0;
+        const interval = setInterval(() => {
+            emojiBtn.textContent = frames[i];
+            i++;
+            if (i === frames.length) clearInterval(interval);
+        }, 60); // viteza fiecărei faze
     }
 
     /*  ---------------- DARK MODE INTELIGENT ----------------
@@ -219,7 +229,7 @@
         }
 
         // 🔥 Actualizăm emoji-ul aici
-        setEmoji(isDark);
+        animateEmoji(isDark);
     }
 
     function isNightTime() {
