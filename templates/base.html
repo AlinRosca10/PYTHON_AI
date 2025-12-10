@@ -190,16 +190,21 @@
         }
     };
 
-    /*  -----------------------------------------------
-        DARK MODE AVANSAT
-        - auto-detect la prima vizită
-        - auto-schimbare la 18:00 / 06:00
-        - cron 1 min
-        - fade animated transition
-        ------------------------------------------------
-    */
+    function setEmoji(isDark) {
+        const btn = document.getElementById("theme-toggle");
+        btn.textContent = isDark ? "🌙" : "✨";
+    }
+
+    /*  ---------------- DARK MODE INTELIGENT ----------------
+        ✔ Preferință utilizator → are prioritate absolută
+        ✔ Prima vizită → detectare automată
+        ✔ Auto schimbare la 18:00 / 06:00
+        ✔ Cron → verificare la fiecare minut
+        ✔ Tranziție animată fade
+        ----------------------------------------------------- */
 
     function applyTheme(theme, withFade = false) {
+        const isDark = theme === "dark"
         if (withFade) {
             document.body.classList.add("fade-transition");
             setTimeout(() => {
@@ -207,11 +212,14 @@
             }, 500);
         }
 
-        if (theme === "dark") {
+        if (isDark) {
             document.body.classList.add("dark");
         } else {
             document.body.classList.remove("dark");
         }
+
+        // 🔥 Actualizăm emoji-ul aici
+        setEmoji(isDark);
     }
 
     function isNightTime() {
