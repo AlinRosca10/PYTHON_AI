@@ -174,11 +174,25 @@
     </main>
 
     <footer class="system-footer">
-      <p>© 2025 — stil inspirat de 
-        <a href="https://calmcode.io" target="_blank">calmcode.io</a>
-      </p>
-      <p>Created by Alin Roșca  © 2025 
-      </p>
+      <div class="footer-flex">
+
+
+          <section class="image-side-content" width="120px">
+            <button class="aurora-button" alt="Settings and properties menu CALM">
+              <img src="{{ url_for('static', filename='icons/combo.png') }}" style="height: 30px">
+            </button>
+          </section>
+
+          <section class="footer-text">
+            <p>© 2025 — stil inspirat de 
+              <a href="https://calmcode.io" target="_blank">calmcode.io</a>
+            </p>
+            <p>Created by Alin Roșca  © 2025 
+            </p>
+          </section>
+
+
+        </div>
     </footer>
   </div>
   <script>

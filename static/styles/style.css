@@ -311,6 +311,8 @@ body {
   align-content: flex-start;
   flex-wrap: wrap;
   text-align: justify;
+  display: flex;
+  align-items: center;
 }
 
 .image-side-content h2 {
@@ -404,7 +406,6 @@ body {
 }
 
 .system-footer {
-  text-align: right;
   padding: 20px;
   margin-top: 25px;
   border-top: 1px solid #1a1a1a;
@@ -420,6 +421,16 @@ body {
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 
+}
+
+.footer-flex {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.footer-text {
+  text-align: right;
 }
 
 @keyframes auroraAnimation {
