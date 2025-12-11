@@ -58,6 +58,8 @@
         --text: #0f172a;
         --muted: #6b7280;
         --accent: #2563eb;
+        transition: background 0.7s ease, color 0.7s ease, opacity 0.7s ease;
+        opacity: 0.8; 
     }
 
     :root[data-mode="dark"] {
@@ -66,6 +68,8 @@
         --text: #e5e7eb;
         --muted: #9ca3af;
         --accent: #60a5fa;
+        transition: background 0.7s ease, color 0.7s ease, opacity 0.7s ease;
+        opacity: 1; 
     }
 
     body {
@@ -85,13 +89,13 @@
       --muted: #9ca3af;
       --accent: #60a5fa;
       transition: background 0.7s ease, color 0.7s ease, opacity 0.7s ease;
-      opacity: 0.6; 
+      opacity: 0.8; 
     }
 
     /* fade-in smooth */
-    body.fade-transition {
+    html.fade-transition {
         transition: background 0.7s ease, color 0.7s ease, opacity 0.7s ease;
-        opacity: 0.6;
+        opacity: 0.8;
     }
 
     .container {
@@ -252,7 +256,7 @@
             location.reload();
         }
     };
-
+    
     const emojiBtn = document.getElementById("theme-toggle");
 
     function animateEmoji(isDark) {
@@ -276,23 +280,43 @@
         ✔ Tranziție animată fade
         ----------------------------------------------------- */
 
-    function applyTheme(theme, withFade = false) {
-        const isDark = theme === "dark"
-        if (withFade) {
-            document.body.classList.add("fade-transition");
-            setTimeout(() => {
-                document.body.classList.remove("fade-transition");
-            }, 500);
-        }
+    /* =============== HELPER =============== */
 
+    function fadeHTML() {
+        const root = document.documentElement;
+        root.classList.add("fade-transition");
+        setTimeout(() => root.classList.remove("fade-transition"), 500);
+    }
+
+    /* =============== PALETTE =============== */
+
+    function applyPalette(palette, withFade = false) {
+        const root = document.documentElement;
+        if (withFade) fadeHTML();
+
+        root.setAttribute("data-palette", palette);
+        localStorage.setItem("palette", palette);
+    }
+
+    /* =============== MODE (LIGHT / DARK) =============== */
+
+    function applyMode(mode, withFade = false, animate = false) {
+        const root = document.documentElement;
+        const isDark = mode === "dark"
+
+        if (withFade) fadeHTML();
+
+        root.setAttribute("data-mode", mode);
+        localStorage.setItem("mode", mode);
+        
         if (isDark) {
-            document.body.classList.add("dark");
+            root.classList.add("dark");
         } else {
-            document.body.classList.remove("dark");
+            root.classList.remove("dark");
         }
 
         // 🔥 Actualizăm emoji-ul aici
-        animateEmoji(isDark);
+        if (animate) animateEmoji(isDark);
     }
 
     function isNightTime() {
@@ -300,36 +324,55 @@
         return (hour >= 18 || hour < 6);
     }
 
-    // 1. Verificăm preferința salvată (user choice)
-    const saved = localStorage.getItem("theme");
+    // 1. Verificăm preferințele salvate (user choice)
 
-    if (saved) {
-        applyTheme(saved);
+    // Paleta salvată sau setată implicit la ocean (default ocean)
+    const savedPalette = localStorage.getItem("palette") || "ocean";
+    applyPalette(savedPalette);
+
+    //Modul salvat
+    const savedMode = localStorage.getItem("mode");
+
+    if (savedMode) {
+        applyMode(savedMode);
     } else {
         // 2. Prima vizită → stabilim în funcție de oră
-        applyTheme(isNightTime() ? "dark" : "light");
+        applyMode(isNightTime() ? "dark" : "light");
     }
 
-    // 3. Toggle manual (în acest caz *blochează* detectarea automată)
-    document.getElementById("theme-toggle").addEventListener("click", () => {
-        const isDark = document.body.classList.toggle("dark");
-        localStorage.setItem("theme", isDark ? "dark" : "light");
-        applyTheme(isDark ? "dark" : "light", true);
-    });
+    // 3. Selector paleta manual (în acest caz *blochează* detectarea automată)
+    const palettePicker = document.getElementById("palette-picker");
+    if (palettePicker) {
+        palettePicker.value = savedPalette;
+        palettePicker.addEventListener("change", e => {
+            applyPalette(e.target.value, true);
+        });
+    }
+
+    // Mode Toggle Button (lumină/întuneric)
+    if (emojiBtn) {
+        emojiBtn.addEventListener("click", () => {
+            const current = document.documentElement.getAttribute("data-mode");
+            const next = current === "dark" ? "light" : "dark";
+
+            applyMode(next, true, true); // fade + emoji animation
+        });
+    }
 
     // 4. CRON → verificare la fiecare minut
     setInterval(() => {
         // Dacă userul a setat manual → nu mai schimbăm automat
-        if (localStorage.getItem("theme")) return;
+        if (localStorage.getItem("mode")) return;
 
         const shouldBeDark = isNightTime();
-        const currentlyDark = document.body.classList.contains("dark");
+        const current = document.documentElement.getAttribute("data-mode");
 
-        if (shouldBeDark !== currentlyDark) {
-            applyTheme(shouldBeDark ? "dark" : "light", true);
+        if ((shouldBeDark && current !== "dark") ||
+            (!shouldBeDark && current !== "light")) {
+
+            applyMode(shouldBeDark ? "dark" : "light", true);
         }
-    }, 60 * 1000); // 1 minut
+    }, 60 * 1000);
   </script>
-  <script type="text/javascript" src="{{url_for('static', filename='scripts/theme_engine.js')}}"></script>
 </body>
 </html>
