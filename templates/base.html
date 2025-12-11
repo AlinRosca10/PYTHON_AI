@@ -1,10 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" style="
---g1: #6bf3fc;
---g2: #33ccee;
---g3: #2299dd;
---g4: #0b58b3;
-">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -21,6 +16,56 @@
       --text: #0f172a;
       --muted: #6b7280;
       --accent: #2563eb;
+      --g1: #6bf3fc;
+      --g2: #33ccee;
+      --g3: #2299dd;
+      --g4: #0b58b3;
+    }
+
+    /* PALETE — afectează doar culorile decorative */
+    :root[data-palette="ocean"] {
+        --g1: #6bf3fc;
+        --g2: #33ccee;
+        --g3: #2299dd;
+        --g4: #0b58b3;
+    }
+
+    :root[data-palette="sunset"] {
+        --g1: #ff9a8b;
+        --g2: #ff6a88;
+        --g3: #ff99ac;
+        --g4: #d4145a;
+    }
+
+    :root[data-palette="forest"] {
+        --g1: #a8e6cf;
+        --g2: #56c596;
+        --g3: #379683;
+        --g4: #0b8457;
+    }
+
+    :root[data-palette="darkness"] {
+        --g1: #1a1a1a;
+        --g2: #2d2d2d;
+        --g3: #3c3c3c;
+        --g4: #555;
+    }
+
+    /* MODURI — afectează structural UI-ul (fundal, text etc) */
+    :root[data-mode="light"] {
+        --bg: #fbfcfd;
+        --card: #ffffff;
+        --text: #0f172a;
+        --muted: #6b7280;
+        --accent: #2563eb;
+    }
+
+    :root[data-mode="dark"] {
+        --bg: #0b1220;
+        --card: #111827;
+        --text: #e5e7eb;
+        --muted: #9ca3af;
+        --accent: #60a5fa;
     }
 
     body {
@@ -144,9 +189,7 @@
   </style>
   <link rel="stylesheet" type="text/css" href="{{url_for('static', filename='styles/style.css')}}">
   <link rel="icon" type="image/png" href="icons/blog.png">
-  <link rel="stylesheet" type="text/css" href="styles/style.css">
-  <script src="https://unpkg.com/image-map-resizer@1.0.10/js/imageMapResizer.min.js">
-  </script>
+  <script src="https://unpkg.com/image-map-resizer@1.0.10/js/imageMapResizer.min.js"></script>
 </head>
 <body>
   <div class="container">
@@ -180,6 +223,12 @@
           <section class="image-side-content" width="120px">
             <button class="aurora-button" alt="Settings and properties menu CALM">
               <img src="{{ url_for('static', filename='icons/combo.png') }}" style="height: 30px">
+              <select id="palette-picker">
+                  <option value="ocean">Ocean</option>
+                  <option value="sunset">Sunset</option>
+                  <option value="forest">Forest</option>
+                  <option value="darkness">Dark</option>
+              </select>
             </button>
           </section>
 
@@ -280,6 +329,7 @@
             applyTheme(shouldBeDark ? "dark" : "light", true);
         }
     }, 60 * 1000); // 1 minut
-</script>
+  </script>
+  <script type="text/javascript" src="{{url_for('static', filename='scripts/theme_engine.js')}}"></script>
 </body>
 </html>
