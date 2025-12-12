@@ -184,6 +184,10 @@
       </div>
 
       <button id="generate-palette" class="aurora-button">Generează Paletă</button>
+
+      <label id="prompt_label" class="aurora-label" for="prompt">🔎</label>
+      <input id="prompt" class="aurora-input" placeholder="scrie stilul... ex: night cyberpunk">
+      <button id="ai-generate" class="aurora-button">AI Palette</button>
     </aside>
 
     <footer class="system-footer">
@@ -240,5 +244,6 @@
   <script type="text/javascript" src="{{url_for('static', filename='scripts/dark_smart_mode.js')}}"></script>
   <script type="text/javascript" src="{{url_for('static', filename='scripts/generate_palete.js')}}"></script>
   <script type="text/javascript" src="{{url_for('static', filename='scripts/theme_engine.js')}}"></script>
+  <script type="text/javascript" src="{{url_for('static', filename='scripts/ai_palettes.js')}}"></script>
 </body>
 </html>
