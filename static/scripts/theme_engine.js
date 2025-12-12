@@ -37,6 +37,12 @@ function isNightTime() {
 const savedPalette = localStorage.getItem("palette") || "ocean";
 applyPalette(savedPalette);
 
+// Check for custom theme
+const savedTheme = localStorage.getItem("theme");
+if (savedTheme === "custom") {
+    document.documentElement.setAttribute("data-theme", "custom");
+}
+
 // Load mode
 const savedMode = localStorage.getItem("mode");
 

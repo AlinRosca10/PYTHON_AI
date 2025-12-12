@@ -155,7 +155,7 @@
     <aside class="sidebar">
       <div id="theme-sidebar">
         <div class="sidebar-header">
-          <h3>Teme</h3>
+          <h2>Teme</h2>
           <button id="close-sidebar" class="close-btn">×</button>
         </div>
 
@@ -181,6 +181,8 @@
           <option value="hitachi">Hitachi</option>
         </select>
       </div>
+
+      <button id="generate-palette" class="aurora-button">Generează Paletă</button>
     </aside>
 
     <footer class="system-footer">
@@ -233,7 +235,9 @@
         }
     });
   </script>
+  
   <script type="text/javascript" src="{{url_for('static', filename='scripts/dark_smart_mode.js')}}"></script>
   <script type="text/javascript" src="{{url_for('static', filename='scripts/theme_engine.js')}}"></script>
+  <script type="text/javascript" src="{{url_for('static', filename='scripts/generate_palete.js')}}"></script>
 </body>
 </html>

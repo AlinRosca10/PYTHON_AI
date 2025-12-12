@@ -1,203 +1,218 @@
 :root {
-  --bg: #fbfcfd;
-  --card: #ffffff;
-  --text: #0f172a;
-  --muted: #6b7280;
-  --accent: #2563eb;
-  --g1: #6bf3fc;
-  --g2: #33ccee;
-  --g3: #2299dd;
-  --g4: #0b58b3;
+    --bg: #fbfcfd;
+    --card: #ffffff;
+    --text: #0f172a;
+    --muted: #6b7280;
+    --accent: #2563eb;
+    --g1: #6bf3fc;
+    --g2: #33ccee;
+    --g3: #2299dd;
+    --g4: #0b58b3;
 }
 
 /* PALETE — afectează doar culorile decorative */
 :root[data-palette="ocean"] {
---g1: #6bf3fc;
---g2: #33ccee;
---g3: #2299dd;
---g4: #0b58b3;
+    --g1: #6bf3fc;
+    --g2: #33ccee;
+    --g3: #2299dd;
+    --g4: #0b58b3;
 }
 
 :root[data-palette="sunset"] {
---g1: #ff9a8b;
---g2: #ff6a88;
---g3: #ff99ac;
---g4: #d4145a;
+    --g1: #ff9a8b;
+    --g2: #ff6a88;
+    --g3: #ff99ac;
+    --g4: #d4145a;
 }
 
 :root[data-palette="forest"] {
---g1: #a8e6cf;
---g2: #56c596;
---g3: #379683;
---g4: #0b8457;
+    --g1: #a8e6cf;
+    --g2: #56c596;
+    --g3: #379683;
+    --g4: #0b8457;
 }
 
 :root[data-palette="darkness"] {
---g1: #1a1a1a;
---g2: #2d2d2d;
---g3: #3c3c3c;
---g4: #555;
+    --g1: #1a1a1a;
+    --g2: #2d2d2d;
+    --g3: #3c3c3c;
+    --g4: #555;
 }
 
 :root[data-palette="galaxy"] {
---g1: #00076f; 
---g2: #44008b;
---g3: #9f45b0;
---g4: #e54ed0;
+    --g1: #00076f; 
+    --g2: #44008b;
+    --g3: #9f45b0;
+    --g4: #e54ed0;
 }
 
 :root[data-palette="sun"] {
---g1: #ff0000;
---g2: #f99400;
---g3: #fec300;
---g4: #f9f160;
+    --g1: #ff0000;
+    --g2: #f99400;
+    --g3: #fec300;
+    --g4: #f9f160;
 }
 
 :root[data-palette="mercury"] {
---g1: #ecd67e; 
---g2: #d4bf65;
---g3: #d4c99c;
---g4: #5767b4;
+    --g1: #ecd67e; 
+    --g2: #d4bf65;
+    --g3: #d4c99c;
+    --g4: #5767b4;
 }
 
 :root[data-palette="venus"] {
---g1: #c18f17;
---g2: #e39e1c;
---g3: #f9c21a;
---g4: #e7d529
+    --g1: #c18f17;
+    --g2: #e39e1c;
+    --g3: #f9c21a;
+    --g4: #e7d529;
 }
 
 :root[data-palette="earth"] {
---g1: #000814; 
---g2: #0b3d91;
---g3: #1e90ff;
---g4: #2e8b57;
+    --g1: #000814; 
+    --g2: #0b3d91;
+    --g3: #1e90ff;
+    --g4: #2e8b57;
 }
 
 :root[data-palette="mars"] {
---g1: #451804; 
---g2: #c1440e;
---g3: #e77d11;
---g4: #fda600;
+    --g1: #451804; 
+    --g2: #c1440e;
+    --g3: #e77d11;
+    --g4: #fda600;
 }
 
 :root[data-palette="jupiter"] {
---g1: #b4a79e; 
---g2: #dcd0b8;
---g3: #d1a77f;
---g4: #e3dadf;
+    --g1: #b4a79e; 
+    --g2: #dcd0b8;
+    --g3: #d1a77f;
+    --g4: #e3dadf;
 }
 
 :root[data-palette="saturn"] {
---g1: #655f45; 
---g2: #d8ae6d;
---g3: #ffe1ab;
---g4: #dbb57c;
+    --g1: #655f45; 
+    --g2: #d8ae6d;
+    --g3: #ffe1ab;
+    --g4: #dbb57c;
 }
 
 :root[data-palette="uranus"] {
---g1: #afdbf5; 
---g2: #93cdf1;
---g3: #62aee7;
---g4: #4296dc;
+    --g1: #afdbf5; 
+    --g2: #93cdf1;
+    --g3: #62aee7;
+    --g4: #4296dc;
 }
 
 :root[data-palette="neptune"] {
---g1: #477efd; 
---g2: #74d6fd;
---g3: #3d5ef9;
---g4: #2b378b;
+    --g1: #477efd; 
+    --g2: #74d6fd;
+    --g3: #3d5ef9;
+    --g4: #2b378b;
 }
 
 :root[data-palette="pluto"] {
---g1: #361d1d; 
---g2: #66574e;
---g3: #7e8173;
---g4: #92a8a4;
+    --g1: #361d1d; 
+    --g2: #66574e;
+    --g3: #7e8173;
+    --g4: #92a8a4;
 }
 
 :root[data-palette="blossem"] {
---g1: #EA73A7;
---g2: #FFA3C3;
---g3: #FBC9E4;
---g4: #F1E6E4;
+    --g1: #EA73A7;
+    --g2: #FFA3C3;
+    --g3: #FBC9E4;
+    --g4: #F1E6E4;
 }
 
 :root[data-palette="sakura"] {
---g1: #F2D3D3;
---g2: #ffb7c5;
---g3: #F274A3;
---g4: #f95790ff;
+    --g1: #F2D3D3;
+    --g2: #ffb7c5;
+    --g3: #F274A3;
+    --g4: #f95790ff;
 }
 
 :root[data-palette="hitachi"] {
---g1: #00C0FF;
---g2: #0080FF;
---g3: #0040FF;
---g4: #0703FF;
+    --g1: #00C0FF;
+    --g2: #0080FF;
+    --g3: #0040FF;
+    --g4: #0703FF;
+}
+
+[data-theme="custom"] {
+    --g1: #ccc;
+    --g2: #bbb;
+    --g3: #aaa;
+    --g4: #999;
 }
 
 
 /* MODURI — afectează structural UI-ul (fundal, text etc) */
 :root[data-mode="light"] {
---bg: #fbfcfd;
---card: #ffffff;
---text: #0f172a;
---muted: #6b7280;
---accent: #2563eb;
+    --bg: #fbfcfd;
+    --card: #ffffff;
+    --text: #0f172a;
+    --muted: #6b7280;
+    --accent: #2563eb;
 }
 
 :root[data-mode="dark"] {
---bg: #0b1220;
---card: #111827;
---text: #e5e7eb;
---muted: #9ca3af;
---accent: #60a5fa;
+    --bg: #0b1220;
+    --card: #111827;
+    --text: #e5e7eb;
+    --muted: #9ca3af;
+    --accent: #60a5fa;
 }
 
-
 .theme-button {
-  cursor: pointer;
-  font-size: 1.4rem;
-  background: none;
-  border: none;
-  margin-left: auto;
-  color: var(--text);
+    cursor: pointer;
+    font-size: 1.4rem;
+    background: none;
+    border: none;
+    margin-left: auto;
+    color: var(--text);
 }
 
 #theme-sidebar {
-  position: fixed;
-  top: 0;
-  left: -260px; /* ascuns */
-  width: 260px;
-  height: 100vh;
-  background: var(--dbox-bg);
-  backdrop-filter: blur(12px);
-  box-shadow: 4px 0 20px rgba(0,0,0,0.3);
-  padding: 20px;
-  transition: left 0.35s ease;
-  z-index: 9999;
-  display: flex;
-  flex-direction: column;
-  gap: 15px;
+    position: fixed;
+    top: 0;
+    left: -260px; /* ascuns */
+    width: 260px;
+    height: 100vh;
+    background: var(--dbox-bg);
+    backdrop-filter: blur(12px);
+    box-shadow: 4px 0 20px rgba(0,0,0,0.3);
+    padding: 20px;
+    transition: left 0.35s ease;
+    z-index: 9999;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
 }
 
 #theme-sidebar.open {
-left: 0; /* apare */
+    left: 0; /* apare */
 }
 
 /* header-ul sidebarului */
 .sidebar-header {
-display: flex;
-justify-content: space-between;
-align-items: center;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: linear-gradient(135deg,
+        var(--g1, #00ffe7),
+        var(--g2, #7f00ff),
+        var(--g3, #ff007f),
+        var(--g4, #00ff88));
+    background-size: 300% 300%;
+    animation: auroraAnimation 6s ease infinite;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
 }
 
 /* buton X */
 .close-btn {
-background: none;
-border: none;
-font-size: 26px;
-color: var(--emr-btn);
-cursor: pointer;
+    background: none;
+    border: none;
+    font-size: 26px;
+    color: var(--emr-btn);
+    cursor: pointer;
 }
