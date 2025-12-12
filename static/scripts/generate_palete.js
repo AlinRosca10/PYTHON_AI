@@ -35,14 +35,32 @@ function generatePalette() {
     };
 }
 
+// 🧽 ȘTERGE toate variabilele inline (foarte important!)
+function clearCustomPalette() {
+    document.documentElement.style.removeProperty("--g1");
+    document.documentElement.style.removeProperty("--g2");
+    document.documentElement.style.removeProperty("--g3");
+    document.documentElement.style.removeProperty("--g4");
+}
+
 // APLICAREA PALETEI CUSTOM
 function applyCustomPalette(p) {
     document.documentElement.setAttribute("data-theme", "custom");
+    document.documentElement.removeAttribute("data-palette");  
 
     document.documentElement.style.setProperty("--g1", p.g1);
     document.documentElement.style.setProperty("--g2", p.g2);
-    document.documentElement.style.setProperty("--g3", p.g3);
+    document.documentElement.style.setProperty("--g3", p.g3); //problema
     document.documentElement.style.setProperty("--g4", p.g4);
+}
+
+// SELECTAREA UNEI PALETE PRESETATE
+function applyPresetPalette(name) {
+    document.documentElement.setAttribute("data-palette", name);
+    document.documentElement.removeAttribute("data-theme");  
+
+    // IMPORTANT: trebuie șterse valorile inline!
+    clearCustomPalette();
 }
 
 // CLICK → GENEREAZĂ
@@ -51,12 +69,20 @@ document.getElementById("generate-palette").addEventListener("click", () => {
     applyCustomPalette(pal);
 
     // salvăm în localStorage
-    localStorage.setItem("theme", "custom");
+    localStorage.setItem("data-theme", "custom");
     localStorage.setItem("customPalette", JSON.stringify(pal));
 });
 
-// Dacă există paletă custom → o reaplicăm
-const savedPal = localStorage.getItem("customPalette");
-if (savedPal) {
-    applyCustomPalette(JSON.parse(savedPal));
-}
+
+// RESTORE LA PORNIRE
+(function restoreTheme() {
+    const type = localStorage.getItem("data-theme");
+
+    if (type === "custom") {
+        const savedPal = localStorage.getItem("customPalette");
+        if (savedPal) applyCustomPalette(JSON.parse(savedPal));
+    } else if (type) {
+        // este o paletă presetată
+        applyPresetPalette(type);
+    }
+})();

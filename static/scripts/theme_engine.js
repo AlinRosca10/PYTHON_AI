@@ -12,6 +12,8 @@ function applyPalette(palette, withFade = false) {
     const root = document.documentElement;
     if (withFade) fadeHTML();
 
+    clearCustomPalette();
+
     root.setAttribute("data-palette", palette);
     localStorage.setItem("palette", palette);
 }
