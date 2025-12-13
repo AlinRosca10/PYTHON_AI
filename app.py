@@ -5,6 +5,7 @@ from flask import Response, stream_with_context, Flask, render_template, abort, 
 import markdown2
 import json
 
+
 # Adaugare monitor global
 LESSONS_DIR = "lessons"
 _last_mtime = 0
