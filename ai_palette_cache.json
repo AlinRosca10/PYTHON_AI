@@ -68,5 +68,61 @@
       "raw": "{\n  \"colors\": [\"#3A8EBA\", \"#F2A900\", \"#E94E77\", \"#4B9B6E\"],\n  \"caption\": \"A vibrant and modern color palette for a user interface.\"\n}",
       "source": "openai"
     }
+  },
+  "rudeus|": {
+    "_ts": 1765627151.6740675,
+    "data": {
+      "colors": [
+        "#4B8B3B",
+        "#F2C94C",
+        "#E76E1A",
+        "#3E3E3E"
+      ],
+      "caption": "Rudeus Inspired Color Palette",
+      "raw": "{\n  \"colors\": [\"#4B8B3B\", \"#F2C94C\", \"#E76E1A\", \"#3E3E3E\"],\n  \"caption\": \"Rudeus Inspired Color Palette\"\n}",
+      "source": "openai"
+    }
+  },
+  "adam|": {
+    "_ts": 1765627186.6382787,
+    "data": {
+      "colors": [
+        "#FF6F61",
+        "#6B5B93",
+        "#88B04B",
+        "#F7CAC9"
+      ],
+      "caption": "A vibrant and modern color palette inspired by the name Adam.",
+      "raw": "{\n  \"colors\": [\"#FF6F61\", \"#6B5B93\", \"#88B04B\", \"#F7CAC9\"],\n  \"caption\": \"A vibrant and modern color palette inspired by the name Adam.\"\n}",
+      "source": "openai"
+    }
+  },
+  "siti|": {
+    "_ts": 1765627623.651503,
+    "data": {
+      "colors": [
+        "#4A90E2",
+        "#D5DBDB",
+        "#F39C12",
+        "#2ECC71"
+      ],
+      "caption": "A modern and vibrant color palette for a sleek UI design.",
+      "raw": "{\n  \"colors\": [\"#4A90E2\", \"#D5DBDB\", \"#F39C12\", \"#2ECC71\"],\n  \"caption\": \"A modern and vibrant color palette for a sleek UI design.\"\n}",
+      "source": "openai"
+    }
+  },
+  "mess|": {
+    "_ts": 1765627651.6643283,
+    "data": {
+      "colors": [
+        "#8B0000",
+        "#FFA500",
+        "#FFD700",
+        "#A52A2A"
+      ],
+      "caption": "A chaotic blend of deep reds and vibrant yellows representing a messy aesthetic.",
+      "raw": "{\n  \"colors\": [\"#8B0000\", \"#FFA500\", \"#FFD700\", \"#A52A2A\"],\n  \"caption\": \"A chaotic blend of deep reds and vibrant yellows representing a messy aesthetic.\"\n}",
+      "source": "openai"
+    }
   }
 }
